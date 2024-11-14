@@ -212,8 +212,8 @@ public class Login_Admin extends javax.swing.JFrame {
         return;
     }
 
-    String query = "SELECT * FROM admin WHERE Admin = ? AND Password = ?";
-    String query1 = "SELECT * FROM receptionist WHERE username = ? AND password = ?";
+    String query = "SELECT * FROM admin WHERE Username = ? AND Password = ?";
+    String query1 = "SELECT * FROM receptionist WHERE Username = ? AND Password = ?";
 
     
     if(isAdmin){
