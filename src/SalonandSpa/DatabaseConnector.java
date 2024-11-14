@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 public class DatabaseConnector {
     
-    private static final String DATABASE = "salon_and_spa";
+    private static final String DATABASE = "salon_and_spadb";
     private static final String PORT = "3306";
     private static final String URL = "jdbc:mysql://localhost:" + PORT + "/" + DATABASE;
     private static final String USERNAME = "root";
