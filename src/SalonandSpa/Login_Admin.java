@@ -3,6 +3,7 @@ package SalonandSpa;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.*;
 
 
 
@@ -219,7 +220,7 @@ public class Login_Admin extends javax.swing.JFrame {
     if(isAdmin){
     try {
         
-        java.sql.PreparedStatement pstmt = conn.prepareStatement(query);
+        PreparedStatement pstmt = conn.prepareStatement(query);
         pstmt.setString(1, adminUsername);
         pstmt.setString(2, adminPassword);
 

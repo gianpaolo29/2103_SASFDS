@@ -34,14 +34,12 @@ public class Staff {
         }
     }
     
-    public static void addService(String staffName, String service) {
+    public static void addStaff(String staffName, String service) {
         Connection conn = DatabaseConnector.connect();
         try {
 
-            // Execute an INSERT query
             try (Statement statement = conn.createStatement()) {
-                // Execute an INSERT query
-                   // "INSERT INTO person (`fname`, `lname`, `email`, `address`, `contact`) VALUES ('"+fname+"', '"+lname+"', '"+email+"', '"+address+"', '"+contact+"')"
+                
                 String insertQuery = "INSERT INTO staff (StaffName, Service) VALUES ('" + staffName + "', '" + service + "')";
                 System.out.println(insertQuery);
 
