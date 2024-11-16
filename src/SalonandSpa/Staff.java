@@ -1,8 +1,11 @@
 package SalonandSpa;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Staff {
@@ -19,7 +22,19 @@ public class Staff {
         this.availability = true;
     }
     
+    public int getStaffID() {
+        return staffID;
+    }
+
     
+    public String getStaffName() {
+        return staffName;
+    }
+
+    
+    public String getService() {
+        return service;
+    }
     
     public void set_availability(boolean availability) {
         this.availability = availability;
@@ -32,6 +47,40 @@ public class Staff {
         else{
             return "Not Available";
         }
+    }
+    
+    
+        public static List<Staff> getAllStaff() {
+        List<Staff> staffs = new ArrayList<>();
+        Connection conn = DatabaseConnector.connect();
+
+        try {
+            Statement statement = conn.createStatement();
+            String selectQuery = "SELECT * FROM staff";
+            ResultSet resultSet = statement.executeQuery(selectQuery);
+
+            while (resultSet.next()) {
+                int staffID = resultSet.getInt("StaffID");
+                String staffName = resultSet.getString("StaffName");
+                String service = resultSet.getString("Service");
+                boolean isAvailable = resultSet.getBoolean("Availability");
+                
+                
+
+                Staff staff = new Staff(staffID, staffName, service, isAvailable);
+                staffs.add(staff);
+            }
+
+            // Close the result set and statement
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
+
+        return staffs;
     }
     
     public static void addStaff(String staffName, String service) {
@@ -58,6 +107,9 @@ public class Staff {
             DatabaseConnector.closeConnection(conn);
         }
     }
+
+    
+    
 
     
 }

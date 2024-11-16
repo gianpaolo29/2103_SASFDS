@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Service {
-    private int serviceID;
-    private String serviceName;
-    private String description;
-    private double price;
+    private final int serviceID;
+    private final String serviceName;
+    private final String description;
+    private final double price;
 
     // Constructor
     public Service(int serviceID, String serviceName, String description, double price) {
@@ -35,7 +35,6 @@ public class Service {
         return price;
     }
 
-    // Method to get all services from the database
     public static List<Service> getAllService() {
         List<Service> services = new ArrayList<>();
         Connection conn = DatabaseConnector.connect();

@@ -229,9 +229,11 @@ public class Login_Admin extends javax.swing.JFrame {
         if (rs.next()) {
             javax.swing.JOptionPane.showMessageDialog(this, "Login successful. Welcome Admin!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
 
- 
+
             Admin_Menu menuFrame = new Admin_Menu();
             menuFrame.setVisible(true);
+            menuFrame.pack();
+            menuFrame.setLocationRelativeTo(null);
             this.dispose();
         } else {
             javax.swing.JOptionPane.showMessageDialog(this, "Invalid username or password. Please try again.", "Login Failed", javax.swing.JOptionPane.ERROR_MESSAGE);
