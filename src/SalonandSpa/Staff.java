@@ -1,9 +1,6 @@
 package SalonandSpa;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +12,7 @@ public class Staff {
     private String service;
     boolean availability;
     
-    public Staff(int serviceID,String staffName, String service, boolean availability){
+    public Staff(int staffID,String staffName, String service, boolean availability){
         this.staffID = staffID;
         this.staffName = staffName;
         this.service = service;
@@ -106,14 +103,43 @@ public class Staff {
         } finally {
             DatabaseConnector.closeConnection(conn);
         }
+    }    
+        
+        public static void updateStaff(int staffID, String staffName, String service) {
+        Connection conn = DatabaseConnector.connect();
+        String updateQuery = "UPDATE staff SET staffName = ?, service  =  ? WHERE staffID = ?";
+        try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+            
+            statement.setString(1, staffName);
+            statement.setString(2, service);
+            statement.setInt(3, staffID);
+            
+            System.out.println(updateQuery);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // Handle SQL exceptions
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
+    }
+        public static void deleteStaff(int staffId) {
+        Connection conn = DatabaseConnector.connect();
+        String deleteQuery = "DELETE FROM staff WHERE staffID = ?";
+                    
+        try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
+            statement.setInt(1, staffId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
+    }
     }
 
     
-    
-
-    
-}
-
+ 
 
 
     

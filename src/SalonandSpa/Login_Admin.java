@@ -35,7 +35,7 @@ public class Login_Admin extends javax.swing.JFrame {
         jMenuBar2 = new javax.swing.JMenuBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("ADMIN");
+        setTitle("LOGIN");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));
@@ -227,7 +227,7 @@ public class Login_Admin extends javax.swing.JFrame {
         ResultSet rs = pstmt.executeQuery();
 
         if (rs.next()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Login successful. Welcome Admin!", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "Login successful", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
 
 
             Admin_Menu menuFrame = new Admin_Menu();

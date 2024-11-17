@@ -90,4 +90,37 @@ public class Service {
             DatabaseConnector.closeConnection(conn);
         }
     }
+        public static void deleteService(int serviceId) {
+        Connection conn = DatabaseConnector.connect();
+        String deleteQuery = "DELETE FROM service WHERE ServiceID = ?";
+                    
+        try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
+            statement.setInt(1, serviceId);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
+    }
+    
+       public static void updateService(int serviceID, String serviceName, String description, double price) {
+        Connection conn = DatabaseConnector.connect();
+        String updateQuery = "UPDATE service SET ServiceName = ?, Description  =  ?, Price = ? WHERE ServiceID = ?";
+        try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+            statement.setString(1, serviceName);
+            statement.setString(2, description);
+            statement.setDouble(3, price);
+            statement.setInt(4, serviceID);
+            
+            System.out.println(updateQuery);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
+    }
+       
 }
