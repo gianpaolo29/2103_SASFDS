@@ -75,27 +75,33 @@ public class Appointment {
     }
 
     
-    public void addAppointment(int appointmentID, Customer customer, LocalDate date, LocalTime startTime, LocalTime endTime, String status) {
-        Connection conn = DatabaseConnector.connect();
-        String insertQuery = "INSERT INTO appointment (AppointmentID, CustomerID, Date, StartTime, EndTime, Status) VALUES (?, ?, ?, ?, ?, ?)";
+    public static void addAppointment(Customer customer, LocalDate date, LocalTime startTime, LocalTime endTime, String status) {
+    Connection conn = DatabaseConnector.connect();
+    String insertQuery = "INSERT INTO appointment (CustomerID, Date, StartTime, EndTime, Status) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
-            preparedStatement.setInt(1, appointmentID);
-            preparedStatement.setInt(2, customer.getCustomerID()); // Use customerID from Customer object
-            preparedStatement.setDate(3, java.sql.Date.valueOf(date));
-            preparedStatement.setTime(4, java.sql.Time.valueOf(startTime));
-            preparedStatement.setTime(5, java.sql.Time.valueOf(endTime));
-            preparedStatement.setString(6, status);
-
-            // Execute the query
-            int rowsInserted = preparedStatement.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("Appointment added successfully!");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DatabaseConnector.closeConnection(conn);
+    try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
+        if (customer.getCustomerID() <= 0) {
+            System.out.println("Invalid customerID.");
+            return;
         }
+
+        preparedStatement.setInt(1, customer.getCustomerID());
+        preparedStatement.setDate(2, java.sql.Date.valueOf(date)); // Convert LocalDate to SQL Date
+        preparedStatement.setTime(3, java.sql.Time.valueOf(startTime)); // Convert LocalTime to SQL Time
+        preparedStatement.setTime(4, java.sql.Time.valueOf(endTime)); // Convert LocalTime to SQL Time
+        preparedStatement.setString(5, status);
+
+        int rowsInserted = preparedStatement.executeUpdate();
+        if (rowsInserted > 0) {
+            System.out.println("Appointment added successfully!");
+        } else {
+            System.out.println("Failed to add appointment.");
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        DatabaseConnector.closeConnection(conn);
     }
+}
+
 }
