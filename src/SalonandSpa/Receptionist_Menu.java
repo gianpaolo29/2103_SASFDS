@@ -4,6 +4,8 @@
  */
 package SalonandSpa;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author Gian Paolo
@@ -47,6 +49,7 @@ public class Receptionist_Menu extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
         jLabel15 = new javax.swing.JLabel();
+        jButton33 = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         jScrollPane7 = new javax.swing.JScrollPane();
         jTable5 = new javax.swing.JTable();
@@ -230,6 +233,17 @@ public class Receptionist_Menu extends javax.swing.JFrame {
 
         jScrollPane5.setViewportView(jPanel11);
 
+        jButton33.setBackground(new java.awt.Color(0, 0, 0));
+        jButton33.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jButton33.setForeground(new java.awt.Color(255, 255, 255));
+        jButton33.setText("LOG OUT");
+        jButton33.setBorder(null);
+        jButton33.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton33ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -237,16 +251,20 @@ public class Receptionist_Menu extends javax.swing.JFrame {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addComponent(jScrollPane5)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel11)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 433, Short.MAX_VALUE)
                 .addGap(24, 24, 24))
         );
 
@@ -440,6 +458,18 @@ public class Receptionist_Menu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    public void logout(){
+        int logout = JOptionPane.showConfirmDialog(null, "Do you want to Logout", "Confirmation", JOptionPane.YES_NO_OPTION);
+        
+       if (logout == JOptionPane.YES_OPTION){
+       Login_Admin Login_AdminFrame = new Login_Admin();
+       Login_AdminFrame.setVisible(true);
+       Login_AdminFrame.pack();
+       Login_AdminFrame.setLocationRelativeTo(null);
+       this.dispose();
+       }
+    }
+    
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         jTabbedPane1.setSelectedIndex(0);
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -472,6 +502,10 @@ public class Receptionist_Menu extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton11ActionPerformed
 
+    private void jButton33ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton33ActionPerformed
+        logout();
+    }//GEN-LAST:event_jButton33ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -480,6 +514,7 @@ public class Receptionist_Menu extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton33;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton8;
     private javax.swing.JComboBox<String> jComboBox1;

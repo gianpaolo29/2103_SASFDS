@@ -171,6 +171,8 @@ public class Login_Receptionist extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    
     private void Password_TxtFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Password_TxtFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_Password_TxtFieldActionPerformed

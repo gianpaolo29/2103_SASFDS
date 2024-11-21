@@ -5,23 +5,25 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 public class Appointment {
-
     private int appointmentID;
-    private Customer customer; 
+    private Customer customerID; 
     private LocalDate date;
     private LocalTime startTime;
     private LocalTime endTime;
     private String status;
+    public List<AppointmentService> items;
 
-    public Appointment(int appointmentID, Customer customer, LocalDate date, LocalTime startTime, LocalTime endTime, String status) {
+    public Appointment(int appointmentID, Customer customerID, LocalDate date, LocalTime startTime, LocalTime endTime, String status, List<AppointmentService> items) {
         this.appointmentID = appointmentID;
-        this.customer = customer;
+        this.customerID = customerID;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.status = status;
+        this.items = items;
     }
 
     // Getters and setters
@@ -34,13 +36,11 @@ public class Appointment {
         this.appointmentID = appointmentID;
     }
 
-    public Customer getCustomer() {
-        return customer;
+    public Customer getCustomerID() {
+        return customerID;
     }
 
-    public void setCustomer(Customer customer) {
-        this.customer = customer;
-    }
+    
 
     public LocalDate getDate() {
         return date;

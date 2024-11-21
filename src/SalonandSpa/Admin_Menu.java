@@ -1,12 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
 package SalonandSpa;
 
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,15 +11,19 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.HashSet;
 import java.util.Set;
-/**
- *
- * @author Gian Paolo
- */
-public class Admin_Menu extends javax.swing.JFrame {
+import javax.swing.DefaultListModel;
+import javax.swing.ListModel;
 
-    /**
-     * Creates new form Menu
-     */
+public class Admin_Menu extends javax.swing.JFrame {
+    List<Customer> customers;
+    List<Service> services;
+    List<Staff> staffs;
+    List<AppointmentService> newAppointmentServices;
+    AppointmentService newAppointmentService;
+    
+    List<Service> appointmentServiceOptions;
+    List<Staff> appointmentStaffOptions;
+
     public Admin_Menu() {
         initComponents();
     }
@@ -59,48 +60,87 @@ public class Admin_Menu extends javax.swing.JFrame {
     private void clearStaff(){
         StaffName_txt.setText("");
     }
+
     
     private void clearCustomer(){
         Cname_txt.setText("");
         Ccno_txt.setText("");
     }
     
+    
     private void refreshStaff() {
     DefaultTableModel staffTableModel = (DefaultTableModel) StaffsJtable.getModel();
 
-    List<Staff> staffs = Staff.getAllStaff();
+    this.staffs = Staff.getAllStaff();
     staffTableModel.setRowCount(0);
 
-    for (Staff staff : staffs) {
+    for (Staff staff : this.staffs) {
         String availability = staff.availability ? "Available" : "Not Available";
-        Object[] rowData = {staff.getStaffID(),staff.getStaffName(), staff.getService(), availability};
+        Object[] rowData = {staff.getStaffID(),staff.getStaffName(), staff.getService().getServiceName(), availability};
         staffTableModel.addRow(rowData);
     }
     }
     
     private void refreshService() {
-    DefaultTableModel serviceTableModel = (DefaultTableModel) ServiceJtable.getModel();
+        DefaultTableModel serviceTableModel = (DefaultTableModel) ServiceJtable.getModel();
 
-    List<Service> services = Service.getAllService();
-    serviceTableModel.setRowCount(0);
+        this.services = Service.getAllService();
+        serviceTableModel.setRowCount(0);
+        ServiceComboBox.removeAllItems();
 
-    for (Service service : services) {
-        Object[] rowData = {service.getServiceID(),service.getServiceName(), service.getDescription(), service.getPrice()};
-        serviceTableModel.addRow(rowData);
+
+        for (Service service : this.services) {
+            Object[] rowData = {service.getServiceID(),service.getServiceName(), service.getDescription(), service.getPrice()};
+            serviceTableModel.addRow(rowData);
+            ServiceComboBox.addItem(service.getServiceName());
+        }
     }
-}
     
-    private void refreshCustomer() {
-    DefaultTableModel customerTableModel = (DefaultTableModel) CustomerJTable.getModel();
+    private void refreshAppointmentServiceOptions () {
+        this.appointmentServiceOptions = new ArrayList<>();
+        this.appointmentStaffOptions = new ArrayList<>();
+        
+        DefaultListModel<String> staffListModel = new DefaultListModel<String>();
+        staffListModel.clear();
+        newAppointmentStaffList.setModel(staffListModel);
+        
+        DefaultListModel<String> listModel = new DefaultListModel<String>();
+        listModel.clear();
 
-    List<Customer> customers = Customer.getAllCustomers();
-    customerTableModel.setRowCount(0);
-
-    for (Customer customer : customers) {
-        Object[] rowData = {customer.getCustomerID(), customer.getCustomerName(), customer.getContactNo()};
-        customerTableModel.addRow(rowData);
+        newAppointmentServicesList.setModel(listModel);
+        
+        for (Service service : this.services) {
+            boolean found = false;
+            
+            for (AppointmentService appointmentService: this.newAppointmentServices) {
+                if (appointmentService.service.getServiceID() == service.getServiceID()) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            if (!found) {
+                this.appointmentServiceOptions.add(service);
+                listModel.addElement(service.getServiceName());
+            }
+        }
     }
-}
+    
+
+    private void refreshCustomer() {
+        DefaultTableModel customerTableModel = (DefaultTableModel) CustomerJTable.getModel();
+
+        this.customers = Customer.getAllCustomers();
+        customerTableModel.setRowCount(0);
+
+        newAppointmentCustomerCmbobx.removeAllItems();
+
+        for (Customer customer : this.customers) {
+            Object[] rowData = {customer.getCustomerID(), customer.getCustomerName(), customer.getContactNo()};
+            customerTableModel.addRow(rowData);
+            newAppointmentCustomerCmbobx.addItem(customer.getCustomerName());
+        }
+    }
     
     
     private void getReceptionist() {
@@ -126,8 +166,6 @@ public class Admin_Menu extends javax.swing.JFrame {
        }
     }
     
-
-    
     
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -139,8 +177,8 @@ public class Admin_Menu extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        newAppointmentNavBtn = new javax.swing.JButton();
+        staffNavBtn = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -167,8 +205,6 @@ public class Admin_Menu extends javax.swing.JFrame {
         jPanel11 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        ContactNo_txt = new javax.swing.JTextField();
-        CustomerName_txt = new javax.swing.JTextField();
         jLabel12 = new javax.swing.JLabel();
         Date = new com.toedter.calendar.JDateChooser();
         EndTime_Cb = new javax.swing.JComboBox<>();
@@ -178,18 +214,18 @@ public class Admin_Menu extends javax.swing.JFrame {
         jPanel12 = new javax.swing.JPanel();
         jScrollPane10 = new javax.swing.JScrollPane();
         jScrollPane9 = new javax.swing.JScrollPane();
-        AppointmentDetailsTable = new javax.swing.JTable();
+        newAppointmentServicesTable = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel15 = new javax.swing.JLabel();
+        newAppointmentTotalLabel = new javax.swing.JLabel();
         jButton15 = new javax.swing.JButton();
         jButton16 = new javax.swing.JButton();
-        jScrollPane11 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jScrollPane12 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
         jLabel29 = new javax.swing.JLabel();
         jLabel32 = new javax.swing.JLabel();
+        newAppointmentCustomerCmbobx = new javax.swing.JComboBox<>();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        newAppointmentServicesList = new javax.swing.JList<>();
+        jScrollPane11 = new javax.swing.JScrollPane();
+        newAppointmentStaffList = new javax.swing.JList<>();
         StaffPanel = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jPanel13 = new javax.swing.JPanel();
@@ -312,25 +348,25 @@ public class Admin_Menu extends javax.swing.JFrame {
             }
         });
 
-        jButton5.setBackground(new java.awt.Color(255, 255, 255));
-        jButton5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton5.setText("New Appointments");
-        jButton5.setBorder(null);
-        jButton5.setPreferredSize(new java.awt.Dimension(7, 28));
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        newAppointmentNavBtn.setBackground(new java.awt.Color(255, 255, 255));
+        newAppointmentNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        newAppointmentNavBtn.setText("New Appointments");
+        newAppointmentNavBtn.setBorder(null);
+        newAppointmentNavBtn.setPreferredSize(new java.awt.Dimension(7, 28));
+        newAppointmentNavBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                newAppointmentNavBtnActionPerformed(evt);
             }
         });
 
-        jButton6.setBackground(new java.awt.Color(255, 255, 255));
-        jButton6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton6.setText("Staffs");
-        jButton6.setBorder(null);
-        jButton6.setPreferredSize(new java.awt.Dimension(7, 28));
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        staffNavBtn.setBackground(new java.awt.Color(255, 255, 255));
+        staffNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        staffNavBtn.setText("Staffs");
+        staffNavBtn.setBorder(null);
+        staffNavBtn.setPreferredSize(new java.awt.Dimension(7, 28));
+        staffNavBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                staffNavBtnActionPerformed(evt);
             }
         });
 
@@ -367,8 +403,8 @@ public class Admin_Menu extends javax.swing.JFrame {
                     .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(staffNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
@@ -382,9 +418,9 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(staffNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -632,20 +668,6 @@ public class Admin_Menu extends javax.swing.JFrame {
 
         jLabel4.setText("Date");
 
-        ContactNo_txt.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        ContactNo_txt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ContactNo_txtActionPerformed(evt);
-            }
-        });
-
-        CustomerName_txt.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        CustomerName_txt.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                CustomerName_txtActionPerformed(evt);
-            }
-        });
-
         jLabel12.setText("Customer");
 
         EndTime_Cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "9:00 am", "10:00 am", "11:00 am", "12:00 am", "1:00 pm", "2:00 pm", "3:00 pm" }));
@@ -661,8 +683,8 @@ public class Admin_Menu extends javax.swing.JFrame {
 
         jLabel14.setText("End time");
 
-        AppointmentDetailsTable.setBackground(new java.awt.Color(204, 204, 204));
-        AppointmentDetailsTable.setModel(new javax.swing.table.DefaultTableModel(
+        newAppointmentServicesTable.setBackground(new java.awt.Color(204, 204, 204));
+        newAppointmentServicesTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -685,11 +707,11 @@ public class Admin_Menu extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jScrollPane9.setViewportView(AppointmentDetailsTable);
-        if (AppointmentDetailsTable.getColumnModel().getColumnCount() > 0) {
-            AppointmentDetailsTable.getColumnModel().getColumn(0).setResizable(false);
-            AppointmentDetailsTable.getColumnModel().getColumn(1).setResizable(false);
-            AppointmentDetailsTable.getColumnModel().getColumn(2).setResizable(false);
+        jScrollPane9.setViewportView(newAppointmentServicesTable);
+        if (newAppointmentServicesTable.getColumnModel().getColumnCount() > 0) {
+            newAppointmentServicesTable.getColumnModel().getColumn(0).setResizable(false);
+            newAppointmentServicesTable.getColumnModel().getColumn(1).setResizable(false);
+            newAppointmentServicesTable.getColumnModel().getColumn(2).setResizable(false);
         }
 
         jScrollPane10.setViewportView(jScrollPane9);
@@ -697,18 +719,18 @@ public class Admin_Menu extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel3.setText("Total: ");
 
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel6.setText("XXXXX");
+        newAppointmentTotalLabel.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        newAppointmentTotalLabel.setText("0");
 
         javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
         jPanel12.setLayout(jPanel12Layout);
         jPanel12Layout.setHorizontalGroup(
             jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel12Layout.createSequentialGroup()
+            .addGroup(jPanel12Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel6)
+                .addComponent(newAppointmentTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(44, 44, 44))
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addContainerGap()
@@ -722,10 +744,8 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel6)))
+                    .addComponent(newAppointmentTotalLabel)))
         );
-
-        jLabel15.setText("Contact Number");
 
         jButton15.setText("Clear");
         jButton15.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.black, java.awt.Color.lightGray));
@@ -743,17 +763,29 @@ public class Admin_Menu extends javax.swing.JFrame {
             }
         });
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane11.setViewportView(jTextArea1);
-
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane12.setViewportView(jTextArea2);
-
         jLabel29.setText("Staffs");
 
         jLabel32.setText("Services");
+
+        newAppointmentCustomerCmbobx.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newAppointmentCustomerCmbobxActionPerformed(evt);
+            }
+        });
+
+        newAppointmentServicesList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                newAppointmentServicesListMouseClicked(evt);
+            }
+        });
+        jScrollPane8.setViewportView(newAppointmentServicesList);
+
+        newAppointmentStaffList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                newAppointmentStaffListMouseClicked(evt);
+            }
+        });
+        jScrollPane11.setViewportView(newAppointmentStaffList);
 
         javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
         jPanel11.setLayout(jPanel11Layout);
@@ -763,52 +795,52 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(Date, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(CustomerName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel2))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(StartTime_Cb, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(43, 43, 43))
-                            .addComponent(jLabel32, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane12, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addComponent(newAppointmentCustomerCmbobx, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGroup(jPanel11Layout.createSequentialGroup()
+                                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                                .addComponent(jLabel32)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                            .addComponent(StartTime_Cb, 0, 218, Short.MAX_VALUE))
+                                        .addGap(88, 88, 88)))
+                                .addGap(43, 43, 43)))
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(ContactNo_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(jPanel11Layout.createSequentialGroup()
                                 .addGap(48, 48, 48)
                                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jScrollPane11)
-                                    .addGroup(jPanel11Layout.createSequentialGroup()
-                                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel14)
-                                            .addComponent(jLabel29))
-                                        .addGap(0, 0, Short.MAX_VALUE))))
+                                    .addComponent(jLabel14)
+                                    .addComponent(jLabel29))
+                                .addGap(0, 0, Short.MAX_VALUE))
                             .addGroup(jPanel11Layout.createSequentialGroup()
                                 .addGap(58, 58, 58)
                                 .addComponent(EndTime_Cb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addGap(25, 25, 25))
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(jLabel12)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jLabel15)
-                        .addGap(165, 165, 165))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
                         .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27))))
+                        .addGap(27, 27, 27))
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel12))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(Date, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel11Layout.createSequentialGroup()
+                                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 0, Short.MAX_VALUE))))
             .addGroup(jPanel11Layout.createSequentialGroup()
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 105, Short.MAX_VALUE))
         );
         jPanel11Layout.setVerticalGroup(
             jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -816,13 +848,9 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addGap(7, 7, 7)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel12)
-                    .addComponent(jLabel15))
+                .addComponent(jLabel12)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(CustomerName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ContactNo_txt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(newAppointmentCustomerCmbobx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -840,22 +868,21 @@ public class Admin_Menu extends javax.swing.JFrame {
                         .addComponent(EndTime_Cb, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(9, 9, 9)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel29)
-                    .addComponent(jLabel32))
+                    .addComponent(jLabel32)
+                    .addComponent(jLabel29))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 30, Short.MAX_VALUE)
-                        .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton15)
-                            .addComponent(jButton16))
-                        .addGap(22, 22, 22))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
                         .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(0, 18, Short.MAX_VALUE))
+                    .addComponent(jScrollPane8))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton15)
+                    .addComponent(jButton16))
+                .addGap(22, 22, 22))
         );
 
         jScrollPane5.setViewportView(jPanel11);
@@ -879,7 +906,7 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1507,11 +1534,11 @@ public class Admin_Menu extends javax.swing.JFrame {
             CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(CustomersPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel20)
+                .addGroup(CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jButton32, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel20))
                 .addGap(18, 18, 18)
                 .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
@@ -1797,15 +1824,20 @@ public class Admin_Menu extends javax.swing.JFrame {
         jTabbedPane1.setSelectedIndex(2);
     }//GEN-LAST:event_jButton4ActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void newAppointmentNavBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newAppointmentNavBtnActionPerformed
         jTabbedPane1.setSelectedIndex(3);
-    }//GEN-LAST:event_jButton5ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-        jTabbedPane1.setSelectedIndex(4);
-        selectService();
+        refreshCustomer();
         refreshStaff();
-    }//GEN-LAST:event_jButton6ActionPerformed
+        refreshService();
+        this.newAppointmentServices = new ArrayList<>();
+        refreshAppointmentServiceOptions();
+    }//GEN-LAST:event_newAppointmentNavBtnActionPerformed
+
+    private void staffNavBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_staffNavBtnActionPerformed
+        jTabbedPane1.setSelectedIndex(4);
+        refreshService();
+        refreshStaff();
+    }//GEN-LAST:event_staffNavBtnActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
         jTabbedPane1.setSelectedIndex(5);
@@ -1818,7 +1850,7 @@ public class Admin_Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void StaffName_txtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StaffName_txtActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_StaffName_txtActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -1827,15 +1859,13 @@ public class Admin_Menu extends javax.swing.JFrame {
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
 
-        String staffName = StaffName_txt.getText();
-        String service = ServiceComboBox.getItemAt(ServiceComboBox.getSelectedIndex());
+        String staffName = StaffName_txt.getText();      
 
-        
-
-        if (staffName.isEmpty() || service.isEmpty()) {
+        if (staffName.isEmpty() || ServiceComboBox.getSelectedIndex() < 0) {
             JOptionPane.showMessageDialog(null, "Please complete the form.");
         } else {
-            Staff.addStaff(staffName, service);
+            Service selectedService = this.services.get(ServiceComboBox.getSelectedIndex());
+            Staff.addStaff(staffName, selectedService.getServiceID());
                 
         }
 
@@ -1876,42 +1906,35 @@ public class Admin_Menu extends javax.swing.JFrame {
         }      
     }//GEN-LAST:event_jButton13ActionPerformed
 
-    private void CustomerName_txtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CustomerName_txtActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_CustomerName_txtActionPerformed
-
-    private void ContactNo_txtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ContactNo_txtActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ContactNo_txtActionPerformed
-
     private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
     
-    String customerName = CustomerName_txt.getText();
-    String contactNo = ContactNo_txt.getText();
-    java.util.Date selectedDate = Date.getDate();
-    String startTimeStr = StartTime_Cb.getItemAt(StartTime_Cb.getSelectedIndex());
-    String endTimeStr = EndTime_Cb.getItemAt(EndTime_Cb.getSelectedIndex());
-
-    // Validate input fields
-    if (customerName.isEmpty() || contactNo.isEmpty() || selectedDate == null || startTimeStr.isEmpty() || endTimeStr.isEmpty()) {
-        JOptionPane.showMessageDialog(null, "Please complete the form.");
-        return;
-    }
-
-    // Convert selected date to LocalDate
-    LocalDate date = selectedDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-    
-    // Convert start and end time strings to LocalTime
-    LocalTime startTime = LocalTime.parse(startTimeStr);
-    LocalTime endTime = LocalTime.parse(endTimeStr);
-
-    
-    // Switch to the appropriate tab in the UI
-    jTabbedPane1.setSelectedIndex(7);
+//    String customerName = CustomerName_txt.getText();
+//    String contactNo = ContactNo_txt.getText();
+//    java.util.Date selectedDate = Date.getDate();
+//    String startTimeStr = StartTime_Cb.getItemAt(StartTime_Cb.getSelectedIndex());
+//    String endTimeStr = EndTime_Cb.getItemAt(EndTime_Cb.getSelectedIndex());
+//
+//    if (customerName.isEmpty() || contactNo.isEmpty() || selectedDate == null || startTimeStr.isEmpty() || endTimeStr.isEmpty()) {
+//        JOptionPane.showMessageDialog(null, "Please complete the form.");
+//        return;
+//    }
+//    
+//    Customer.addCustomer(customerName, contactNo);
+//    
+//    
+//    
+//    // Convert selected date to LocalDate
+//    LocalDate date = selectedDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+//    
+//    LocalTime startTime = LocalTime.parse(startTimeStr);
+//    LocalTime endTime = LocalTime.parse(endTimeStr);
+//
+//    
+//    jTabbedPane1.setSelectedIndex(7);
     }//GEN-LAST:event_jButton16ActionPerformed
 
     private void EndTime_CbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EndTime_CbActionPerformed
@@ -1957,7 +1980,7 @@ public class Admin_Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton24ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
+        jTabbedPane1.setSelectedIndex(0);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void serviceDescription_txtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceDescription_txtActionPerformed
@@ -2042,7 +2065,7 @@ public class Admin_Menu extends javax.swing.JFrame {
     private void jButton25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton25ActionPerformed
     
         int row = StaffsJtable.getSelectedRow();
-        System.out.println(row);
+            System.out.println(row);
         if (row < 0) {
             JOptionPane.showMessageDialog(StaffPanel, "Please Select row to update.");
             return;
@@ -2131,20 +2154,78 @@ public class Admin_Menu extends javax.swing.JFrame {
     logout();
     }//GEN-LAST:event_jButton33ActionPerformed
 
+    private void newAppointmentCustomerCmbobxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newAppointmentCustomerCmbobxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_newAppointmentCustomerCmbobxActionPerformed
+
+    private void newAppointmentServicesListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newAppointmentServicesListMouseClicked
+
+        DefaultListModel<String> listModel = new DefaultListModel<String>();
+        listModel.clear();
+        newAppointmentStaffList.setModel(listModel);
+        
+        this.appointmentStaffOptions = new ArrayList<>();
+        
+        int index = newAppointmentServicesList.getSelectedIndex();
+        if (index >= 0) { 
+            Service service =this.appointmentServiceOptions.get(index);
+            this.newAppointmentService = new AppointmentService(service, null);
+    
+            for (Staff staff : this.staffs) {
+                 if (staff.getService().getServiceID() == service.getServiceID()) {
+                    this.appointmentStaffOptions.add(staff);
+                    listModel.addElement(staff.getStaffName());
+                }
+            }
+        }
+    }//GEN-LAST:event_newAppointmentServicesListMouseClicked
+
+    private void newAppointmentStaffListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_newAppointmentStaffListMouseClicked
+        int index = newAppointmentStaffList.getSelectedIndex();
+        
+        if (index >= 0) {
+            Staff staff = this.appointmentStaffOptions.get(index);
+            
+            this.newAppointmentService.staff = staff;
+            
+            this.newAppointmentServices.add(this.newAppointmentService);
+            
+            System.err.println(this.newAppointmentServices.size());
+            
+            DefaultTableModel newAppointmentServicesTableModel = (DefaultTableModel) newAppointmentServicesTable.getModel();
+
+            newAppointmentServicesTableModel.setRowCount(0);
+
+            for (AppointmentService appointmentService : this.newAppointmentServices) {
+                Object[] rowData = {appointmentService.service.getServiceName(), appointmentService.staff.getStaffName(), appointmentService.service.getPrice()};
+                newAppointmentServicesTableModel.addRow(rowData);
+            }
+            
+            refreshAppointmentServiceOptions();
+            calculateNewAppointmentTotal();
+        }
+    }//GEN-LAST:event_newAppointmentStaffListMouseClicked
+
+    private void calculateNewAppointmentTotal () {
+        double total = 0;
+        
+        for (AppointmentService appointmentService : this.newAppointmentServices) {
+            total = total + appointmentService.service.getPrice();
+        }
+        
+        newAppointmentTotalLabel.setText(String.valueOf(total));
+    }
     /**
      * @param args the command line arguments
      */
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTable AppointmentDetailsTable;
     private javax.swing.JPanel AppointmentsPanel;
     private javax.swing.JTextField Ccno_txt;
     private javax.swing.JTextField Cname_txt;
-    private javax.swing.JTextField ContactNo_txt;
     private javax.swing.JPanel CreateAppoinmentPanel;
     private javax.swing.JTable CustomerJTable;
-    private javax.swing.JTextField CustomerName_txt;
     private javax.swing.JPanel CustomersPanel;
     private javax.swing.JPanel DashboardPanel;
     private com.toedter.calendar.JDateChooser Date;
@@ -2186,8 +2267,6 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JButton jButton32;
     private javax.swing.JButton jButton33;
     private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
@@ -2201,7 +2280,6 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
-    private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel18;
@@ -2230,7 +2308,6 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel39;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
@@ -2247,7 +2324,6 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
-    private javax.swing.JScrollPane jScrollPane12;
     private javax.swing.JScrollPane jScrollPane13;
     private javax.swing.JScrollPane jScrollPane14;
     private javax.swing.JScrollPane jScrollPane15;
@@ -2257,18 +2333,24 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable3;
     private javax.swing.JTable jTable8;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
     private javax.swing.JTextField jTextField10;
     private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
+    private javax.swing.JComboBox<String> newAppointmentCustomerCmbobx;
+    private javax.swing.JButton newAppointmentNavBtn;
+    private javax.swing.JList<String> newAppointmentServicesList;
+    private javax.swing.JTable newAppointmentServicesTable;
+    private javax.swing.JList<String> newAppointmentStaffList;
+    private javax.swing.JLabel newAppointmentTotalLabel;
     private javax.swing.JTextField serviceDescription_txt;
     private javax.swing.JTextField serviceName_txt;
     private javax.swing.JTextField servicePrice_txt;
+    private javax.swing.JButton staffNavBtn;
     // End of variables declaration//GEN-END:variables
 }

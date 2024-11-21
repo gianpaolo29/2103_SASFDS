@@ -228,7 +228,7 @@ public class Login_Admin extends javax.swing.JFrame {
         ResultSet rs = pstmt.executeQuery();
 
         if (rs.next()) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Login successful", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            javax.swing.JOptionPane.showMessageDialog(this, "LOGIN SUCCESSFUL", "Success", javax.swing.JOptionPane.INFORMATION_MESSAGE);
 
 
             Admin_Menu menuFrame = new Admin_Menu();

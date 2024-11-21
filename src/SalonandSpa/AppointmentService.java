@@ -2,12 +2,11 @@ package SalonandSpa;
 
 
 public class AppointmentService {
+   public Service service;
+   public Staff staff;
     
-    Appointment appointmentID;
-    int serviceID;
-    int staffID;
-    String service;
-    
-    
-    
+    public AppointmentService(Service service, Staff staff) {
+        this.service = service;
+        this.staff = staff;
+    }
 }

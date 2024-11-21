@@ -9,10 +9,10 @@ public class Staff {
     
     private int staffID;
     private String staffName;
-    private String service;
+    private Service service;
     boolean availability;
     
-    public Staff(int staffID,String staffName, String service, boolean availability){
+    public Staff(int staffID,String staffName, Service service, boolean availability){
         this.staffID = staffID;
         this.staffName = staffName;
         this.service = service;
@@ -29,7 +29,7 @@ public class Staff {
     }
 
     
-    public String getService() {
+    public Service getService() {
         return service;
     }
     
@@ -47,22 +47,25 @@ public class Staff {
     }
     
     
-        public static List<Staff> getAllStaff() {
+    public static List<Staff> getAllStaff() {
         List<Staff> staffs = new ArrayList<>();
         Connection conn = DatabaseConnector.connect();
 
         try {
             Statement statement = conn.createStatement();
-            String selectQuery = "SELECT * FROM staff";
+            String selectQuery = "SELECT * FROM `staff` JOIN service on service.ServiceID = staff.ServiceId";
             ResultSet resultSet = statement.executeQuery(selectQuery);
 
             while (resultSet.next()) {
                 int staffID = resultSet.getInt("StaffID");
                 String staffName = resultSet.getString("StaffName");
-                String service = resultSet.getString("Service");
+                int serviceId = resultSet.getInt("ServiceID");
+                String serviceName = resultSet.getString("ServiceName");
+                String serviceDescription = resultSet.getString("Description");
+                double price = resultSet.getDouble("Price");
                 boolean isAvailable = resultSet.getBoolean("Availability");
                 
-                
+                Service service = new Service(serviceId, serviceName, serviceDescription, price);
 
                 Staff staff = new Staff(staffID, staffName, service, isAvailable);
                 staffs.add(staff);
@@ -79,19 +82,20 @@ public class Staff {
 
         return staffs;
     }
+   
     
-    public static void addStaff(String staffName, String service) {
+    public static void addStaff(String staffName, int serviceId) {
         Connection conn = DatabaseConnector.connect();
         try {
 
             try (Statement statement = conn.createStatement()) {
                 
-                String insertQuery = "INSERT INTO staff (StaffName, Service) VALUES ('" + staffName + "', '" + service + "')";
+                String insertQuery = "INSERT INTO staff (StaffName, ServiceId) VALUES ('" + staffName + "', '" + serviceId + "')";
                 System.out.println(insertQuery);
 
                 int rowsAffected = statement.executeUpdate(insertQuery);
                 // Check the number of rows affected
-                if (rowsAffected > 0) {
+                if (rowsAffected > 0) { 
                     System.out.println("Insertion successful" + rowsAffected);
                 } else {
                     System.out.println("Insertion failed.");

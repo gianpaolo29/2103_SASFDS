@@ -129,6 +129,29 @@ public class Customer {
         }
     }
     
+    public static void getID(){
+
+        Connection conn = DatabaseConnector.connect();
+
+        try {
+            Statement statement = conn.createStatement();
+            String selectQuery = "SELECT CutomerID FROM customer WHERE CustomerID = ? ";
+            ResultSet resultSet = statement.executeQuery(selectQuery);
+
+            while (resultSet.next()) {
+                int customerID = resultSet.getInt("CustomerID");
+            }
+
+            // Close the result set and statement
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
+    }
+    
 }
 
 
