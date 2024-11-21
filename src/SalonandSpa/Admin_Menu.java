@@ -3,16 +3,15 @@ package SalonandSpa;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import javax.swing.DefaultListModel;
-import javax.swing.ListModel;
 
 public class Admin_Menu extends javax.swing.JFrame {
     List<Customer> customers;
@@ -206,9 +205,9 @@ public class Admin_Menu extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        Date = new com.toedter.calendar.JDateChooser();
-        EndTime_Cb = new javax.swing.JComboBox<>();
-        StartTime_Cb = new javax.swing.JComboBox<>();
+        newAppointmentFormDate = new com.toedter.calendar.JDateChooser();
+        newAppointmentFormEndTime = new javax.swing.JComboBox<>();
+        newAppointmentFormStartTime = new javax.swing.JComboBox<>();
         jLabel13 = new javax.swing.JLabel();
         jLabel14 = new javax.swing.JLabel();
         jPanel12 = new javax.swing.JPanel();
@@ -670,14 +669,14 @@ public class Admin_Menu extends javax.swing.JFrame {
 
         jLabel12.setText("Customer");
 
-        EndTime_Cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "9:00 am", "10:00 am", "11:00 am", "12:00 am", "1:00 pm", "2:00 pm", "3:00 pm" }));
-        EndTime_Cb.addActionListener(new java.awt.event.ActionListener() {
+        newAppointmentFormEndTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM" }));
+        newAppointmentFormEndTime.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EndTime_CbActionPerformed(evt);
+                newAppointmentFormEndTimeActionPerformed(evt);
             }
         });
 
-        StartTime_Cb.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8:00 am", "9:00 am", "10:00 am", "11:00 am", "12:00 am", "1:00 pm", "2:00 pm", "3:00 pm" }));
+        newAppointmentFormStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM" }));
 
         jLabel13.setText("Start time");
 
@@ -730,8 +729,8 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel3)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(newAppointmentTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(44, 44, 44))
+                .addComponent(newAppointmentTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
             .addGroup(jPanel12Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane10, javax.swing.GroupLayout.PREFERRED_SIZE, 549, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -795,49 +794,39 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel13, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                    .addComponent(newAppointmentCustomerCmbobx, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGroup(jPanel11Layout.createSequentialGroup()
-                                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                                .addComponent(jLabel32)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                            .addComponent(StartTime_Cb, 0, 218, Short.MAX_VALUE))
-                                        .addGap(88, 88, 88)))
-                                .addGap(43, 43, 43)))
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(newAppointmentFormDate, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel13)
                             .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGap(48, 48, 48)
+                                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel14)
-                                    .addComponent(jLabel29))
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addGap(58, 58, 58)
-                                .addComponent(EndTime_Cb, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addGap(25, 25, 25))
+                                    .addComponent(jLabel29)
+                                    .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(newAppointmentCustomerCmbobx, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(301, 301, 301))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel11Layout.createSequentialGroup()
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel32)
+                            .addComponent(newAppointmentFormStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(27, 27, 27))
+                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel14)
+                            .addComponent(newAppointmentFormEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(253, 253, 253))
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
                             .addComponent(jLabel2)
                             .addComponent(jLabel12))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(136, 136, 136))
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(Date, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(jPanel11Layout.createSequentialGroup()
-                                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(120, 120, 120))))
             .addGroup(jPanel11Layout.createSequentialGroup()
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 105, Short.MAX_VALUE))
@@ -854,28 +843,25 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Date, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(newAppointmentFormDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel13)
+                    .addComponent(jLabel14))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(newAppointmentFormStartTime, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel13)
-                            .addComponent(jLabel14))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(StartTime_Cb, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addGap(26, 26, 26)
-                        .addComponent(EndTime_Cb, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(9, 9, 9)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGap(2, 2, 2)
+                        .addComponent(newAppointmentFormEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel32)
                     .addComponent(jLabel29))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel11Layout.createSequentialGroup()
-                        .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 18, Short.MAX_VALUE))
-                    .addComponent(jScrollPane8))
+                    .addComponent(jScrollPane8, javax.swing.GroupLayout.DEFAULT_SIZE, 165, Short.MAX_VALUE)
+                    .addComponent(jScrollPane11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -897,7 +883,7 @@ public class Admin_Menu extends javax.swing.JFrame {
                     .addGroup(CreateAppoinmentPanelLayout.createSequentialGroup()
                         .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane5))
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE))
                 .addContainerGap())
         );
         CreateAppoinmentPanelLayout.setVerticalGroup(
@@ -906,7 +892,7 @@ public class Admin_Menu extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel11)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1822,6 +1808,9 @@ public class Admin_Menu extends javax.swing.JFrame {
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jTabbedPane1.setSelectedIndex(2);
+        List<Appointment> appointments = Appointment.getAllAppointments();
+        
+        System.out.println(appointments.size());
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void newAppointmentNavBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newAppointmentNavBtnActionPerformed
@@ -1911,35 +1900,45 @@ public class Admin_Menu extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+    int customerComboxIndex = newAppointmentCustomerCmbobx.getSelectedIndex();
+    java.util.Date appointementDate = newAppointmentFormDate.getDate();
     
-//    String customerName = CustomerName_txt.getText();
 //    String contactNo = ContactNo_txt.getText();
-//    java.util.Date selectedDate = Date.getDate();
-//    String startTimeStr = StartTime_Cb.getItemAt(StartTime_Cb.getSelectedIndex());
-//    String endTimeStr = EndTime_Cb.getItemAt(EndTime_Cb.getSelectedIndex());
-//
-//    if (customerName.isEmpty() || contactNo.isEmpty() || selectedDate == null || startTimeStr.isEmpty() || endTimeStr.isEmpty()) {
-//        JOptionPane.showMessageDialog(null, "Please complete the form.");
-//        return;
-//    }
-//    
-//    Customer.addCustomer(customerName, contactNo);
-//    
-//    
-//    
+//    java.util.Date selectedDate = ewDate.getDate();
+    String startTimeStr = newAppointmentFormStartTime.getItemAt(newAppointmentFormStartTime.getSelectedIndex());
+    String endTimeStr = newAppointmentFormEndTime.getItemAt(newAppointmentFormEndTime.getSelectedIndex());
+    
+        if (appointementDate == null || customerComboxIndex < 0 || this.newAppointmentServices.isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Please complete the form.");
+            return; 
+        }
+
 //    // Convert selected date to LocalDate
-//    LocalDate date = selectedDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-//    
-//    LocalTime startTime = LocalTime.parse(startTimeStr);
-//    LocalTime endTime = LocalTime.parse(endTimeStr);
-//
-//    
-//    jTabbedPane1.setSelectedIndex(7);
+//        LocalDate date = newAppointmentFormDate.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+        Customer customer = this.customers.get(customerComboxIndex);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+        LocalTime startTime = LocalTime.parse(startTimeStr, formatter);
+        LocalTime endTime = LocalTime.parse(endTimeStr, formatter);
+        
+        UUID appointmentId = UUID.randomUUID();
+        Appointment newAppointment = new Appointment(appointmentId, customer, new java.util.Date(), startTime, endTime, "PENDING", this.newAppointmentServices);
+        
+        newAppointment.save();
+        
+        for (AppointmentService appointmentService: newAppointment.items) {
+            appointmentService.appointmentId = appointmentId;
+            appointmentService.save();
+        }
+        
+        this.newAppointmentService = null;
+        this.newAppointmentServices = new ArrayList<>();
+        refreshAppointmentServiceOptions();
     }//GEN-LAST:event_jButton16ActionPerformed
 
-    private void EndTime_CbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EndTime_CbActionPerformed
+    private void newAppointmentFormEndTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newAppointmentFormEndTimeActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_EndTime_CbActionPerformed
+    }//GEN-LAST:event_newAppointmentFormEndTimeActionPerformed
 
     private void jTextField10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField10ActionPerformed
         // TODO add your handling code here:
@@ -2169,7 +2168,8 @@ public class Admin_Menu extends javax.swing.JFrame {
         int index = newAppointmentServicesList.getSelectedIndex();
         if (index >= 0) { 
             Service service =this.appointmentServiceOptions.get(index);
-            this.newAppointmentService = new AppointmentService(service, null);
+            
+            this.newAppointmentService = new AppointmentService(UUID.randomUUID(), UUID.randomUUID(), service, null);
     
             for (Staff staff : this.staffs) {
                  if (staff.getService().getServiceID() == service.getServiceID()) {
@@ -2228,8 +2228,6 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JTable CustomerJTable;
     private javax.swing.JPanel CustomersPanel;
     private javax.swing.JPanel DashboardPanel;
-    private com.toedter.calendar.JDateChooser Date;
-    private javax.swing.JComboBox<String> EndTime_Cb;
     private javax.swing.JPanel PaymentDetailsPanel;
     private javax.swing.JTable ReceptionistJtable;
     private javax.swing.JPanel ReceptionistPanel;
@@ -2239,7 +2237,6 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JTextField StaffName_txt;
     private javax.swing.JPanel StaffPanel;
     private javax.swing.JTable StaffsJtable;
-    private javax.swing.JComboBox<String> StartTime_Cb;
     private javax.swing.JLabel TotalSales;
     private javax.swing.JScrollPane gshe;
     private javax.swing.JButton jButton1;
@@ -2343,6 +2340,9 @@ public class Admin_Menu extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField11;
     private javax.swing.JTextField jTextField12;
     private javax.swing.JComboBox<String> newAppointmentCustomerCmbobx;
+    private com.toedter.calendar.JDateChooser newAppointmentFormDate;
+    private javax.swing.JComboBox<String> newAppointmentFormEndTime;
+    private javax.swing.JComboBox<String> newAppointmentFormStartTime;
     private javax.swing.JButton newAppointmentNavBtn;
     private javax.swing.JList<String> newAppointmentServicesList;
     private javax.swing.JTable newAppointmentServicesTable;
