@@ -4,16 +4,14 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/DatabaseConnector.java</file>
-            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Login_Admin.java</file>
             <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Payment.java</file>
             <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Receptionist_Menu.java</file>
-            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Receptionist.java</file>
-            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Login_Receptionist.java</file>
             <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Admin_Menu.java</file>
-            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Staff.java</file>
-            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Customer.java</file>
+            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/SalonandSpa.java</file>
             <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Appointment.java</file>
             <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Service.java</file>
+            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/Customer.java</file>
+            <file>file:/C:/Users/Windows/Desktop/SASFDS/src/SalonandSpa/AppointmentService.java</file>
         </group>
     </open-files>
 </project-private>
