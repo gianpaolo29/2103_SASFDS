@@ -146,7 +146,7 @@ public class Appointment {
     }
     
     
-
+  
     public static List<Appointment> getAllAppointments(String statusFilter) {
         List<Appointment> appointments = new ArrayList<>();
         List<AppointmentService> appointmentServices = AppointmentService.getAllAppointmentServices();
