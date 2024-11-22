@@ -19,7 +19,7 @@ public class Payment {
         this.time = time;
         this.total = total;
         this.staffTip = staffTip;
-        
+           
     }
     
     

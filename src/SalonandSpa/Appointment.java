@@ -109,6 +109,28 @@ public class Appointment {
         }
     }
     
+    public String getServicesString() {
+        ArrayList<String> list = new ArrayList<>();
+        
+        System.out.println(this.items.size());
+        for (AppointmentService appointmentService : this.items) {
+            list.add(appointmentService.service.getServiceName());
+            System.out.println(appointmentService.service.getServiceName());
+        }
+        
+        return String.join(",", list);
+    }
+    
+    public double getTotal() {
+        double total = 0;
+        
+        for (AppointmentService appointmentService : this.items) {
+            total = total + appointmentService.service.getPrice();
+        }
+        
+        return total;
+    }
+    
     
 
     public static List<Appointment> getAllAppointments() {
@@ -121,16 +143,7 @@ public class Appointment {
             Statement statement = conn.createStatement();
             String selectQuery = "SELECT * FROM `appointment` JOIN customer on customer.CustomerID = appointment.CustomerID";
             ResultSet resultSet = statement.executeQuery(selectQuery);
-
-//AppointmentID
-//CustomerID
-//ContactNo
-//Date
-//StartTime
-//EndTime
-//Status
-//CustomerID
-//Name
+            
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
             DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm:ss");
 
@@ -151,7 +164,7 @@ public class Appointment {
                 List<AppointmentService> items = new ArrayList<>();
                 
                 for (AppointmentService appointmentService : appointmentServices) {
-                    if (appointmentService.appointmentId.toString() == appointmendId.toString()) {
+                    if (appointmentService.appointmentId.toString().equals(appointmendId.toString())) {
                         items.add(appointmentService);
                     }
                 }
