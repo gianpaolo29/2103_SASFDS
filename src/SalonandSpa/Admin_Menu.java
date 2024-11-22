@@ -95,8 +95,6 @@ private void refreshAppointment() {
 
 private void refreshAppointmentsToPay() {
     List<Appointment> appointments = Appointment.getAllAppointments("PENDING");
-    
-    System.out.println(appointments.size());
 
     paymentAppointmentCombobox.removeAllItems();
     for (Appointment appointment : appointments) {
