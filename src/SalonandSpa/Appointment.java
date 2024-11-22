@@ -15,12 +15,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class Appointment {
-    private UUID appointmentID;
-    private Customer customer; 
-    private Date date;
-    private LocalTime startTime;
-    private LocalTime endTime;
-    private String status;
+    public UUID appointmentID;
+    public Customer customer; 
+    public Date date;
+    public LocalTime startTime;
+    public LocalTime endTime;
+    public String status;
     public List<AppointmentService> items;
 
     public Appointment(UUID appointmentID, Customer customer, Date date, LocalTime startTime, LocalTime endTime, String status, List<AppointmentService> items) {
@@ -121,19 +121,33 @@ public class Appointment {
         return String.join(",", list);
     }
     
-    public double getTotal() {
+    public double getTotalAmount() {
         double total = 0;
         
         for (AppointmentService appointmentService : this.items) {
-            total = total + appointmentService.service.getPrice();
+            total = total + appointmentService.amount;
         }
         
         return total;
     }
     
+    public double getTotalTip() {
+        double total = 0;
+        
+        for (AppointmentService appointmentService : this.items) {
+            total = total + appointmentService.tip;
+        }
+        
+        return total;
+    }
+    
+    public double getTotal () {
+        return  this.getTotalAmount() + this.getTotalTip();
+    }
+    
     
 
-    public static List<Appointment> getAllAppointments() {
+    public static List<Appointment> getAllAppointments(String statusFilter) {
         List<Appointment> appointments = new ArrayList<>();
         List<AppointmentService> appointmentServices = AppointmentService.getAllAppointmentServices();
         
@@ -142,6 +156,13 @@ public class Appointment {
         try {
             Statement statement = conn.createStatement();
             String selectQuery = "SELECT * FROM `appointment` JOIN customer on customer.CustomerID = appointment.CustomerID";
+            
+            if (statusFilter != null) {
+                selectQuery = selectQuery + " WHERE `appointment`.status = '" + statusFilter + "'"; 
+            }
+            
+            System.err.println(selectQuery);
+
             ResultSet resultSet = statement.executeQuery(selectQuery);
             
             SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -183,6 +204,23 @@ public class Appointment {
         }
 
         return appointments;
+    }
+    
+    public void pay() {
+        Connection conn = DatabaseConnector.connect();
+        String updateQuery = "UPDATE appointment SET Status = ? WHERE AppointmentID = ?";
+        try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+            statement.setString(1, "PAID");
+            statement.setString(2, this.appointmentID.toString());
+            
+            System.out.println(updateQuery);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
     }
     
 }

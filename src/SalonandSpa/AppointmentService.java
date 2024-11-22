@@ -15,24 +15,28 @@ public class AppointmentService {
    public Staff staff;
    public UUID appointmentServiceId;
    public UUID appointmentId;
+   public double amount;
+   public double tip;
     
-    public AppointmentService(UUID appointmentServiceId, UUID appointmentId, Service service, Staff staff) {
+    public AppointmentService(UUID appointmentServiceId, UUID appointmentId, Service service, Staff staff, double amount, double  tip) {
         this.service = service;
         this.staff = staff;
         this.appointmentId = appointmentId;
         this.appointmentServiceId = appointmentServiceId;
+        this.amount = amount;
+        this.tip = tip;
     }
     
     public void save() {
         Connection conn = DatabaseConnector.connect();
-        String insertQuery = "INSERT INTO appointmentservice (AppointmentServiceID, AppointmentID, ServiceID, StaffID) VALUES (?, ?, ?, ?)";
+        String insertQuery = "INSERT INTO appointmentservice (AppointmentServiceID, AppointmentID, ServiceID, StaffID, Amount) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
             preparedStatement.setString(1, this.appointmentServiceId.toString());
             preparedStatement.setString(2, this.appointmentId.toString());
             preparedStatement.setInt(3, this.service.getServiceID());
             preparedStatement.setInt(4, this.staff.getStaffID());
-
+            preparedStatement.setDouble(5, this.amount);
 
             int rowsAffected = preparedStatement.executeUpdate();
             if (rowsAffected > 0) {
@@ -73,8 +77,12 @@ public class AppointmentService {
                 
                 UUID appointmentServiceId = UUID.fromString(resultSet.getString("AppointmentServiceID"));
                 UUID appointmentId = UUID.fromString(resultSet.getString("AppointmentID"));
+                double amount = resultSet.getDouble("Amount");
+                double tip = resultSet.getDouble("Tip");
                 
-                AppointmentService appointmentService = new AppointmentService(appointmentServiceId, appointmentId, service, staff);
+                System.out.println(tip);
+                
+                AppointmentService appointmentService = new AppointmentService(appointmentServiceId, appointmentId, service, staff, amount, tip);
                 
                 items.add(appointmentService);
             }
@@ -89,5 +97,22 @@ public class AppointmentService {
         }
 
         return items;
+    }
+    
+    public void saveTip() {
+        Connection conn = DatabaseConnector.connect();
+        String updateQuery = "UPDATE appointmentservice SET Tip = ? WHERE AppointmentServiceID = ?";
+        try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
+            statement.setDouble(1, this.tip);
+            statement.setString(2, this.appointmentServiceId.toString());
+            
+            System.out.println(updateQuery);
+            statement.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnector.closeConnection(conn);
+        }
     }
 }
