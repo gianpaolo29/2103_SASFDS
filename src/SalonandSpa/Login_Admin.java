@@ -23,13 +23,14 @@ public class Login_Admin extends javax.swing.JFrame {
         buttonGroup1 = new javax.swing.ButtonGroup();
         jPanel1 = new javax.swing.JPanel();
         Right = new javax.swing.JPanel();
+        txt_icon = new javax.swing.JLabel();
         Left = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         UserName_TxtField = new javax.swing.JTextField();
         Password_TxtField = new javax.swing.JPasswordField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        btn_login = new javax.swing.JButton();
         ReceptionistBottom = new javax.swing.JRadioButton();
         AdminBottom = new javax.swing.JRadioButton();
         jMenuBar2 = new javax.swing.JMenuBar();
@@ -44,15 +45,23 @@ public class Login_Admin extends javax.swing.JFrame {
 
         Right.setBackground(new java.awt.Color(0, 102, 102));
 
+        txt_icon.setIcon(new javax.swing.ImageIcon("C:\\Users\\user\\Downloads\\logo-brand-beauty-parlour-natural-beauty-salon-spa-natural-beauty-thumbnail-removebg-preview.png")); // NOI18N
+
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);
         RightLayout.setHorizontalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(RightLayout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(txt_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 340, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         RightLayout.setVerticalGroup(
             RightLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
+            .addGroup(RightLayout.createSequentialGroup()
+                .addGap(76, 76, 76)
+                .addComponent(txt_icon, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(80, Short.MAX_VALUE))
         );
 
         jPanel1.add(Right);
@@ -88,15 +97,15 @@ public class Login_Admin extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(102, 102, 102));
         jLabel4.setText("Username");
 
-        jButton2.setBackground(new java.awt.Color(0, 102, 102));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Login");
-        jButton2.setBorder(null);
-        jButton2.setPreferredSize(new java.awt.Dimension(7, 28));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btn_login.setBackground(new java.awt.Color(0, 102, 102));
+        btn_login.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        btn_login.setForeground(new java.awt.Color(255, 255, 255));
+        btn_login.setText("Login");
+        btn_login.setBorder(null);
+        btn_login.setPreferredSize(new java.awt.Dimension(7, 28));
+        btn_login.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btn_loginActionPerformed(evt);
             }
         });
 
@@ -133,7 +142,7 @@ public class Login_Admin extends javax.swing.JFrame {
             .addGroup(LeftLayout.createSequentialGroup()
                 .addGap(31, 31, 31)
                 .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(LeftLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(UserName_TxtField, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
@@ -163,7 +172,7 @@ public class Login_Admin extends javax.swing.JFrame {
                     .addComponent(ReceptionistBottom)
                     .addComponent(AdminBottom))
                 .addGap(21, 21, 21)
-                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(146, 146, 146))
         );
 
@@ -198,7 +207,7 @@ public class Login_Admin extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_UserName_TxtFieldActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btn_loginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_loginActionPerformed
 
         
         boolean isAdmin = AdminBottom.isSelected();
@@ -280,7 +289,7 @@ public class Login_Admin extends javax.swing.JFrame {
         javax.swing.JOptionPane.showMessageDialog(this, "Select a Role", "Error", javax.swing.JOptionPane.ERROR_MESSAGE);
     }
     
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btn_loginActionPerformed
 
     
     private void ReceptionistBottomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReceptionistBottomActionPerformed
@@ -304,12 +313,13 @@ public class Login_Admin extends javax.swing.JFrame {
     private javax.swing.JRadioButton ReceptionistBottom;
     private javax.swing.JPanel Right;
     private javax.swing.JTextField UserName_TxtField;
+    private javax.swing.JButton btn_login;
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JLabel txt_icon;
     // End of variables declaration//GEN-END:variables
 }
