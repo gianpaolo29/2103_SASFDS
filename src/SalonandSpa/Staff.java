@@ -53,7 +53,7 @@ public class Staff {
 
         try {
             Statement statement = conn.createStatement();
-            String selectQuery = "SELECT * FROM `staff` JOIN service on service.ServiceID = staff.ServiceId";
+            String selectQuery = "SELECT * FROM staff JOIN service ON service.ServiceID = staff.ServiceId WHERE staff.Status = 'Active'";
             ResultSet resultSet = statement.executeQuery(selectQuery);
 
             while (resultSet.next()) {
@@ -129,7 +129,7 @@ public class Staff {
     }
         public static void deleteStaff(int staffId) {
         Connection conn = DatabaseConnector.connect();
-        String deleteQuery = "DELETE FROM staff WHERE staffID = ?";
+        String deleteQuery = "UPDATE staff SET Status = 'Inactive' WHERE staffID = ?";
                     
         try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
             statement.setInt(1, staffId);

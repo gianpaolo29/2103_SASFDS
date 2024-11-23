@@ -1,6 +1,7 @@
 package SalonandSpa;
 
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -12,12 +13,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import javax.swing.DefaultListModel;
+import javax.swing.plaf.OptionPaneUI;
 
 public class Receptionist_Menu extends javax.swing.JFrame {
     List<Customer> customers;
     List<Service> services;
     List<Staff> staffs;
     List<Appointment> appointments;
+    List<Appointment> appointmentsToPay;
     List<AppointmentService> newAppointmentServices;
     AppointmentService newAppointmentService;
     Appointment selectedAppointment;
@@ -37,7 +40,7 @@ public class Receptionist_Menu extends javax.swing.JFrame {
         
         try {
             Statement stm = conn.createStatement();
-            ResultSet rs = stm.executeQuery("SELECT ServiceName FROM service");
+            ResultSet rs = stm.executeQuery("SELECT ServiceName FROM service WHERE Status = 'Active'");
             
             ServiceComboBox.removeAllItems();
             while (rs.next()) {
@@ -52,6 +55,41 @@ public class Receptionist_Menu extends javax.swing.JFrame {
         
     }
     
+public void totalSales(String date) {
+    // Establish a connection to the database
+    Connection conn = DatabaseConnector.connect();
+
+    String query = "SELECT SUM(appointmentservice.Amount) AS TotalAmount " +
+                   "FROM appointmentservice " +
+                   "JOIN appointment ON appointment.AppointmentID = appointmentservice.AppointmentID " +
+                   "WHERE appointment.Date = ? AND appointment.Status = 'Paid'";
+
+    try (PreparedStatement statement = conn.prepareStatement(query)) {
+        statement.setString(1, date);
+
+        ResultSet resultSet = statement.executeQuery();
+
+        // Process the result
+        if (resultSet.next()) {
+            double totalAmount = resultSet.getDouble("TotalAmount");
+            
+            TotalSales.setText(Double.toString(totalAmount));
+        } else {
+            System.out.println("No sales data found for the date: " + date);
+        }
+
+        // Close the ResultSet
+        resultSet.close();
+    } catch (SQLException e) {
+        e.printStackTrace();
+        System.err.println("Error while fetching total sales: " + e.getMessage());
+    } finally {
+        // Close the database connection
+        DatabaseConnector.closeConnection(conn);
+    }
+}
+
+    
     private void clearService(){
         serviceName_txt.setText("");
         serviceDescription_txt.setText("");
@@ -64,11 +102,11 @@ public class Receptionist_Menu extends javax.swing.JFrame {
 
     
     private void clearCustomer(){
-        newAppointmentServicesTable.removeAll();
-    }
-    private void clearAppointment(){
         Cname_txt.setText("");
         Ccno_txt.setText("");
+    }
+    private void clearAppointment(){
+        newAppointmentServicesTable.removeAll();
     }
     
     
@@ -94,11 +132,11 @@ private void refreshAppointment() {
 }
 
 private void refreshAppointmentsToPay() {
-    List<Appointment> appointments = Appointment.getAllAppointments("PENDING");
+    this.appointmentsToPay = Appointment.getAllAppointments("PENDING");
 
     paymentAppointmentCombobox.removeAllItems();
-    for (Appointment appointment : appointments) {
-        paymentAppointmentCombobox.addItem(appointment.appointmentID.toString());
+    for (Appointment appointment : this.appointmentsToPay) {
+        paymentAppointmentCombobox.addItem(appointment.customer.getCustomerName() + " - " + appointment.appointmentID.toString());
     }
 }
 
@@ -131,6 +169,26 @@ private void refreshAppointmentsToPay() {
             ServiceComboBox.addItem(service.getServiceName());
         }
     }
+    
+    public void refreshDashboard(String date) {
+    // Fetch the data for the given date
+    List<Object[]> services = AppointmentService.getServiceByDate(date);
+
+    // Define column headers
+    String[] columnNames = {"Service Name", "Service Count", "Total Sales"};
+
+    // Create a table model with the column names
+    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+    // Add each row from the service list to the model
+    for (Object[] service : services) {
+        model.addRow(service);
+    }
+
+    // Set the model to the JTable
+    DashboardTable.setModel(model);
+}
+
     
     private void refreshAppointmentServiceOptions () {
         this.appointmentServiceOptions = new ArrayList<>();
@@ -211,8 +269,12 @@ private void refreshAppointmentsToPay() {
         jLabel15 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        DbBttm = new javax.swing.JButton();
+        RpBttm = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         newAppointmentNavBtn = new javax.swing.JButton();
+        staffNavBtn = new javax.swing.JButton();
+        ServiceBttm = new javax.swing.JButton();
         jButton8 = new javax.swing.JButton();
         jButton10 = new javax.swing.JButton();
         jTabbedPane1 = new javax.swing.JTabbedPane();
@@ -259,11 +321,6 @@ private void refreshAppointmentsToPay() {
         newAppointmentServicesList = new javax.swing.JList<>();
         jScrollPane11 = new javax.swing.JScrollPane();
         newAppointmentStaffList = new javax.swing.JList<>();
-        AppointmentsPanel = new javax.swing.JPanel();
-        jLabel10 = new javax.swing.JLabel();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        AppointmentJtable = new javax.swing.JTable();
         PaymentDetailsPanel = new javax.swing.JPanel();
         jLabel33 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
@@ -272,33 +329,44 @@ private void refreshAppointmentsToPay() {
         paymentServicesTable = new javax.swing.JTable();
         paymentAppointmentCombobox = new javax.swing.JComboBox<>();
         jLabel31 = new javax.swing.JLabel();
-        jLabel35 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         paymentAddTipInput = new javax.swing.JTextField();
         jButton5 = new javax.swing.JButton();
         paymentAddTipButton = new javax.swing.JButton();
         jLabel37 = new javax.swing.JLabel();
         paymentTotalLabel = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         PaymentCsName = new javax.swing.JLabel();
-        jLabel34 = new javax.swing.JLabel();
-        PaymentDate = new javax.swing.JLabel();
         jLabel38 = new javax.swing.JLabel();
         PaymentStTime = new javax.swing.JLabel();
         PaymentEndTime = new javax.swing.JLabel();
         jLabel41 = new javax.swing.JLabel();
+        jLabel34 = new javax.swing.JLabel();
+        PaymentDate = new javax.swing.JLabel();
+        AppointmentsPanel = new javax.swing.JPanel();
+        jLabel10 = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        AppointmentJtable = new javax.swing.JTable();
         DashboardPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jPanel10 = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         TotalSales = new javax.swing.JLabel();
-        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        DashboardDateChooser = new com.toedter.calendar.JDateChooser();
+        jScrollPane13 = new javax.swing.JScrollPane();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        DashboardTable = new javax.swing.JTable();
+        jButton34 = new javax.swing.JButton();
+        Dbcheck = new javax.swing.JButton();
         ReceptionistPanel = new javax.swing.JPanel();
         jLabel9 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         ReceptionistJtable = new javax.swing.JTable();
+        jButton36 = new javax.swing.JButton();
+        jButton37 = new javax.swing.JButton();
         StaffPanel = new javax.swing.JPanel();
         jLabel16 = new javax.swing.JLabel();
         jPanel13 = new javax.swing.JPanel();
@@ -311,10 +379,11 @@ private void refreshAppointmentsToPay() {
         ServiceComboBox = new javax.swing.JComboBox<>();
         jButton22 = new javax.swing.JButton();
         jButton25 = new javax.swing.JButton();
-        jScrollPane6 = new javax.swing.JScrollPane();
-        StaffsJtable = new javax.swing.JTable();
         jButton26 = new javax.swing.JButton();
         jButton27 = new javax.swing.JButton();
+        jScrollPane14 = new javax.swing.JScrollPane();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        StaffsJtable = new javax.swing.JTable();
         ServicePane = new javax.swing.JPanel();
         gshe = new javax.swing.JScrollPane();
         ServiceJtable = new javax.swing.JTable();
@@ -341,12 +410,39 @@ private void refreshAppointmentsToPay() {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dashboard");
         setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowActivated(java.awt.event.WindowEvent evt) {
+                formWindowActivated(evt);
+            }
+        });
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel2.setBackground(new java.awt.Color(0, 102, 102));
+
+        DbBttm.setBackground(new java.awt.Color(255, 255, 255));
+        DbBttm.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        DbBttm.setText("Dashboard");
+        DbBttm.setBorder(null);
+        DbBttm.setPreferredSize(new java.awt.Dimension(7, 28));
+        DbBttm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DbBttmActionPerformed(evt);
+            }
+        });
+
+        RpBttm.setBackground(new java.awt.Color(255, 255, 255));
+        RpBttm.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        RpBttm.setText("Receptionists");
+        RpBttm.setBorder(null);
+        RpBttm.setPreferredSize(new java.awt.Dimension(7, 28));
+        RpBttm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RpBttmActionPerformed(evt);
+            }
+        });
 
         jButton4.setBackground(new java.awt.Color(255, 255, 255));
         jButton4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -367,6 +463,28 @@ private void refreshAppointmentsToPay() {
         newAppointmentNavBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 newAppointmentNavBtnActionPerformed(evt);
+            }
+        });
+
+        staffNavBtn.setBackground(new java.awt.Color(255, 255, 255));
+        staffNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        staffNavBtn.setText("Staffs");
+        staffNavBtn.setBorder(null);
+        staffNavBtn.setPreferredSize(new java.awt.Dimension(7, 28));
+        staffNavBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                staffNavBtnActionPerformed(evt);
+            }
+        });
+
+        ServiceBttm.setBackground(new java.awt.Color(255, 255, 255));
+        ServiceBttm.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        ServiceBttm.setText("Services");
+        ServiceBttm.setBorder(null);
+        ServiceBttm.setPreferredSize(new java.awt.Dimension(7, 28));
+        ServiceBttm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ServiceBttmActionPerformed(evt);
             }
         });
 
@@ -399,24 +517,36 @@ private void refreshAppointmentsToPay() {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(RpBttm, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(DbBttm, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(staffNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(ServiceBttm, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(43, 43, 43)
+                .addGap(40, 40, 40)
                 .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(327, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(170, 170, 170)
+                .addComponent(staffNavBtn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
+                .addComponent(ServiceBttm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(RpBttm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(DbBttm, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(26, 26, 26))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 200, 500));
@@ -467,6 +597,11 @@ private void refreshAppointmentsToPay() {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        CustomerJTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                CustomerJTableMouseClicked(evt);
             }
         });
         jScrollPane7.setViewportView(CustomerJTable);
@@ -619,21 +754,23 @@ private void refreshAppointmentsToPay() {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton32, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)))
                 .addContainerGap())
         );
         CustomersPanelLayout.setVerticalGroup(
             CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(CustomersPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton32, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel20, javax.swing.GroupLayout.DEFAULT_SIZE, 40, Short.MAX_VALUE))
-                .addGap(15, 15, 15)
+                .addGroup(CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(CustomersPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton32, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton33, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel20))
+                .addGap(18, 18, 18)
                 .addComponent(jPanel14, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -659,6 +796,11 @@ private void refreshAppointmentsToPay() {
         });
 
         newAppointmentFormStartTime.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "01:00 PM", "02:00 PM", "03:00 PM" }));
+        newAppointmentFormStartTime.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newAppointmentFormStartTimeActionPerformed(evt);
+            }
+        });
 
         jLabel13.setText("Start time");
 
@@ -691,8 +833,11 @@ private void refreshAppointmentsToPay() {
         jScrollPane9.setViewportView(newAppointmentServicesTable);
         if (newAppointmentServicesTable.getColumnModel().getColumnCount() > 0) {
             newAppointmentServicesTable.getColumnModel().getColumn(0).setResizable(false);
+            newAppointmentServicesTable.getColumnModel().getColumn(0).setHeaderValue("Service");
             newAppointmentServicesTable.getColumnModel().getColumn(1).setResizable(false);
+            newAppointmentServicesTable.getColumnModel().getColumn(1).setHeaderValue("Staff");
             newAppointmentServicesTable.getColumnModel().getColumn(2).setResizable(false);
+            newAppointmentServicesTable.getColumnModel().getColumn(2).setHeaderValue("Price");
         }
 
         jScrollPane10.setViewportView(jScrollPane9);
@@ -729,15 +874,15 @@ private void refreshAppointmentsToPay() {
         );
 
         jButton15.setText("Clear");
-        jButton15.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.black, java.awt.Color.lightGray));
+        jButton15.setBorder(null);
         jButton15.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton15ActionPerformed(evt);
             }
         });
 
-        jButton16.setText("Submit");
-        jButton16.setBorder(javax.swing.BorderFactory.createEtchedBorder(java.awt.Color.black, java.awt.Color.lightGray));
+        jButton16.setText("Confirm");
+        jButton16.setBorder(null);
         jButton16.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton16ActionPerformed(evt);
@@ -785,7 +930,7 @@ private void refreshAppointmentsToPay() {
                                 .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel29)
                                     .addComponent(jScrollPane11, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(0, 0, Short.MAX_VALUE))
+                        .addGap(0, 8, Short.MAX_VALUE))
                     .addGroup(jPanel11Layout.createSequentialGroup()
                         .addComponent(newAppointmentCustomerCmbobx, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(301, 301, 301))
@@ -805,6 +950,7 @@ private void refreshAppointmentsToPay() {
                             .addComponent(jLabel12))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(jPanel11Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
                         .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -844,11 +990,11 @@ private void refreshAppointmentsToPay() {
                     .addComponent(jScrollPane11))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton15)
-                    .addComponent(jButton16))
-                .addGap(22, 22, 22))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton16, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(24, 24, 24))
         );
 
         jScrollPane5.setViewportView(jPanel11);
@@ -877,6 +1023,250 @@ private void refreshAppointmentsToPay() {
         );
 
         jTabbedPane1.addTab("tab4", CreateAppoinmentPanel);
+
+        PaymentDetailsPanel.setPreferredSize(new java.awt.Dimension(600, 500));
+
+        jLabel33.setFont(new java.awt.Font("Segoe UI Black", 1, 20)); // NOI18N
+        jLabel33.setText("Payment");
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        paymentServicesTable.setBackground(new java.awt.Color(204, 204, 204));
+        paymentServicesTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Service", "Staff", "Price", "Tip"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.Float.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        paymentServicesTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                paymentServicesTableMouseClicked(evt);
+            }
+        });
+        jScrollPane15.setViewportView(paymentServicesTable);
+        if (paymentServicesTable.getColumnModel().getColumnCount() > 0) {
+            paymentServicesTable.getColumnModel().getColumn(0).setResizable(false);
+            paymentServicesTable.getColumnModel().getColumn(1).setResizable(false);
+            paymentServicesTable.getColumnModel().getColumn(2).setResizable(false);
+            paymentServicesTable.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        jScrollPane12.setViewportView(jScrollPane15);
+
+        paymentAppointmentCombobox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                paymentAppointmentComboboxItemStateChanged(evt);
+            }
+        });
+        paymentAppointmentCombobox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paymentAppointmentComboboxActionPerformed(evt);
+            }
+        });
+
+        jLabel31.setText("Services");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel5.setText("Appointment ID");
+
+        paymentAddTipInput.setEnabled(false);
+        paymentAddTipInput.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paymentAddTipInputActionPerformed(evt);
+            }
+        });
+        paymentAddTipInput.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                paymentAddTipInputKeyReleased(evt);
+            }
+        });
+
+        jButton5.setText("PAY");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        paymentAddTipButton.setText("ADD TIP");
+        paymentAddTipButton.setEnabled(false);
+        paymentAddTipButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                paymentAddTipButtonActionPerformed(evt);
+            }
+        });
+
+        jLabel37.setText("TOTAL:");
+
+        paymentTotalLabel.setText("XXXXXX");
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel7.setText("Costumer Details");
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+
+        jLabel6.setText("Name:");
+
+        PaymentCsName.setText("XXXXXXXXX");
+
+        jLabel38.setText("Start Time:");
+
+        PaymentStTime.setText("XX");
+
+        PaymentEndTime.setText("XX");
+
+        jLabel41.setText("End Time:");
+
+        jLabel34.setText("Date:");
+
+        PaymentDate.setText("XX");
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PaymentCsName, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel38)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PaymentStTime, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel41)
+                        .addGap(10, 10, 10)
+                        .addComponent(PaymentEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jLabel34)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(PaymentDate, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(PaymentCsName)
+                    .addComponent(PaymentDate)
+                    .addComponent(jLabel34))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel38)
+                        .addComponent(PaymentStTime))
+                    .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(PaymentEndTime)
+                        .addComponent(jLabel41)))
+                .addContainerGap(18, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel5)
+                    .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(paymentAddTipButton, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(44, 44, 44)
+                            .addComponent(paymentAddTipInput, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
+                            .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(paymentTotalLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel31))
+                        .addGroup(jPanel3Layout.createSequentialGroup()
+                            .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(22, 22, 22))
+                        .addComponent(paymentAppointmentCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 535, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 544, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(10, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(4, 4, 4)
+                .addComponent(paymentAppointmentCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel31)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(paymentAddTipInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(paymentAddTipButton)
+                    .addComponent(jLabel37)
+                    .addComponent(paymentTotalLabel))
+                .addGap(18, 18, 18)
+                .addComponent(jButton5)
+                .addContainerGap(33, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout PaymentDetailsPanelLayout = new javax.swing.GroupLayout(PaymentDetailsPanel);
+        PaymentDetailsPanel.setLayout(PaymentDetailsPanelLayout);
+        PaymentDetailsPanelLayout.setHorizontalGroup(
+            PaymentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PaymentDetailsPanelLayout.createSequentialGroup()
+                .addGap(12, 12, 12)
+                .addGroup(PaymentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(26, Short.MAX_VALUE))
+        );
+        PaymentDetailsPanelLayout.setVerticalGroup(
+            PaymentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(PaymentDetailsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel33)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        jTabbedPane1.addTab("tab4", PaymentDetailsPanel);
 
         jLabel10.setFont(new java.awt.Font("Segoe UI Black", 1, 20)); // NOI18N
         jLabel10.setText("Appointments");
@@ -942,31 +1332,63 @@ private void refreshAppointmentsToPay() {
 
         jTabbedPane1.addTab("tab3", AppointmentsPanel);
 
-        jLabel33.setFont(new java.awt.Font("Segoe UI Black", 1, 20)); // NOI18N
-        jLabel33.setText("Payment Details");
+        jLabel1.setFont(new java.awt.Font("Segoe UI Black", 1, 34)); // NOI18N
+        jLabel1.setText("Dashboard");
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
+        jPanel10.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        paymentServicesTable.setBackground(new java.awt.Color(204, 204, 204));
-        paymentServicesTable.setModel(new javax.swing.table.DefaultTableModel(
+        jLabel8.setFont(new java.awt.Font("Segoe UI Black", 1, 16)); // NOI18N
+        jLabel8.setText("TOTAL SALES:");
+
+        TotalSales.setFont(new java.awt.Font("Segoe UI Emoji", 1, 48)); // NOI18N
+        TotalSales.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        TotalSales.setText("00.00");
+
+        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
+        jPanel10.setLayout(jPanel10Layout);
+        jPanel10Layout.setHorizontalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addGroup(jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel10Layout.createSequentialGroup()
+                        .addGap(126, 126, 126)
+                        .addComponent(TotalSales, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel10Layout.setVerticalGroup(
+            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel10Layout.createSequentialGroup()
+                .addGap(18, 18, 18)
+                .addComponent(jLabel8)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(TotalSales, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(24, Short.MAX_VALUE))
+        );
+
+        DashboardDateChooser.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                DashboardDateChooserMouseClicked(evt);
+            }
+        });
+
+        DashboardTable.setBackground(new java.awt.Color(204, 204, 204));
+        DashboardTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Service", "Staff", "Price", "Tip"
+                "Service", "Count", "Sales"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.Float.class, java.lang.Float.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Double.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -977,277 +1399,77 @@ private void refreshAppointmentsToPay() {
                 return canEdit [columnIndex];
             }
         });
-        paymentServicesTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                paymentServicesTableMouseClicked(evt);
-            }
-        });
-        jScrollPane15.setViewportView(paymentServicesTable);
+        jScrollPane1.setViewportView(DashboardTable);
+        if (DashboardTable.getColumnModel().getColumnCount() > 0) {
+            DashboardTable.getColumnModel().getColumn(0).setResizable(false);
+            DashboardTable.getColumnModel().getColumn(1).setResizable(false);
+            DashboardTable.getColumnModel().getColumn(2).setResizable(false);
+        }
 
-        jScrollPane12.setViewportView(jScrollPane15);
+        jScrollPane13.setViewportView(jScrollPane1);
 
-        paymentAppointmentCombobox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                paymentAppointmentComboboxItemStateChanged(evt);
-            }
-        });
-        paymentAppointmentCombobox.addActionListener(new java.awt.event.ActionListener() {
+        jButton34.setBackground(new java.awt.Color(0, 0, 0));
+        jButton34.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jButton34.setForeground(new java.awt.Color(255, 255, 255));
+        jButton34.setText("LOG OUT");
+        jButton34.setBorder(null);
+        jButton34.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paymentAppointmentComboboxActionPerformed(evt);
+                jButton34ActionPerformed(evt);
             }
         });
 
-        jLabel31.setText("Services");
-
-        jLabel35.setText("Appointment");
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel5.setText("Appointment Payment");
-
-        paymentAddTipInput.setEnabled(false);
-        paymentAddTipInput.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                paymentAddTipInputKeyReleased(evt);
-            }
-        });
-
-        jButton5.setText("PAY");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        Dbcheck.setBackground(new java.awt.Color(0, 153, 0));
+        Dbcheck.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        Dbcheck.setForeground(new java.awt.Color(255, 255, 255));
+        Dbcheck.setText("✓");
+        Dbcheck.setBorder(null);
+        Dbcheck.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                DbcheckActionPerformed(evt);
             }
         });
-
-        paymentAddTipButton.setText("ADD TIP");
-        paymentAddTipButton.setEnabled(false);
-        paymentAddTipButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                paymentAddTipButtonActionPerformed(evt);
-            }
-        });
-
-        jLabel37.setText("TOTAL:");
-
-        paymentTotalLabel.setText("XXXXXX");
-
-        jLabel6.setText("Name:");
-
-        PaymentCsName.setText("XXXXXXXXX");
-
-        jLabel34.setText("Date:");
-
-        PaymentDate.setText("XX");
-
-        jLabel38.setText("Start Time:");
-
-        PaymentStTime.setText("XX");
-
-        PaymentEndTime.setText("XX");
-
-        jLabel41.setText("End Time:");
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(paymentAddTipButton, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addComponent(paymentAddTipInput, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jLabel37, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
-                                    .addComponent(paymentTotalLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(21, 21, 21))
-                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel31)
-                                    .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 552, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(PaymentCsName, javax.swing.GroupLayout.PREFERRED_SIZE, 244, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel3Layout.createSequentialGroup()
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel35)
-                                            .addComponent(paymentAppointmentCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGap(118, 118, 118)
-                                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(jLabel38)
-                                                    .addComponent(jLabel41))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                    .addComponent(PaymentStTime, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                    .addComponent(PaymentEndTime, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                            .addGroup(jPanel3Layout.createSequentialGroup()
-                                                .addComponent(jLabel34)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(PaymentDate, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                                .addGap(0, 12, Short.MAX_VALUE))))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addGap(12, 12, 12))))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(3, 3, 3)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel35)
-                    .addComponent(PaymentDate)
-                    .addComponent(jLabel34))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(paymentAppointmentCombobox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel38)
-                    .addComponent(PaymentStTime))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(PaymentCsName)
-                    .addComponent(PaymentEndTime)
-                    .addComponent(jLabel41))
-                .addGap(18, 18, 18)
-                .addComponent(jLabel31)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane12, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(paymentAddTipInput, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(paymentAddTipButton)
-                    .addComponent(jLabel37)
-                    .addComponent(paymentTotalLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
-                .addComponent(jButton5)
-                .addGap(38, 38, 38))
-        );
-
-        javax.swing.GroupLayout PaymentDetailsPanelLayout = new javax.swing.GroupLayout(PaymentDetailsPanel);
-        PaymentDetailsPanel.setLayout(PaymentDetailsPanelLayout);
-        PaymentDetailsPanelLayout.setHorizontalGroup(
-            PaymentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PaymentDetailsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(PaymentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(PaymentDetailsPanelLayout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(PaymentDetailsPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel33, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        PaymentDetailsPanelLayout.setVerticalGroup(
-            PaymentDetailsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PaymentDetailsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel33)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
-        jTabbedPane1.addTab("tab4", PaymentDetailsPanel);
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI Black", 1, 20)); // NOI18N
-        jLabel1.setText("Dashboard");
-
-        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel10.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jLabel8.setText("Total Sales");
-
-        TotalSales.setFont(new java.awt.Font("Segoe UI Emoji", 1, 48)); // NOI18N
-        TotalSales.setText("xxxxxxxxxx");
-
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel10Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(TotalSales, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(132, 132, 132))
-        );
-        jPanel10Layout.setVerticalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel8)
-                .addGap(18, 18, 18)
-                .addComponent(TotalSales, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
-        );
-
-        jTable1.setBackground(new java.awt.Color(204, 204, 204));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Service", "Sales"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
-        jScrollPane1.setViewportView(jTable1);
 
         javax.swing.GroupLayout DashboardPanelLayout = new javax.swing.GroupLayout(DashboardPanel);
         DashboardPanel.setLayout(DashboardPanelLayout);
         DashboardPanelLayout.setHorizontalGroup(
             DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(DashboardPanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
+                .addContainerGap()
                 .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(DashboardPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
+                    .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(31, 31, 31))
-                    .addGroup(DashboardPanelLayout.createSequentialGroup()
-                        .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE)
-                            .addComponent(jPanel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap(27, Short.MAX_VALUE))))
+                        .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton34, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
+                                .addComponent(DashboardDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Dbcheck, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)))))
+                .addContainerGap())
         );
         DashboardPanelLayout.setVerticalGroup(
             DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(DashboardPanelLayout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(DashboardPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
-                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(9, 9, 9)))
+                        .addComponent(jButton34, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(DashboardDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Dbcheck, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
                 .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(62, Short.MAX_VALUE))
+                .addGap(30, 30, 30)
+                .addComponent(jScrollPane13, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("tab1", DashboardPanel);
@@ -1284,6 +1506,18 @@ private void refreshAppointmentsToPay() {
             ReceptionistJtable.getColumnModel().getColumn(1).setResizable(false);
         }
 
+        jButton36.setBackground(new java.awt.Color(0, 0, 0));
+        jButton36.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jButton36.setForeground(new java.awt.Color(255, 255, 255));
+        jButton36.setText("LOG OUT");
+        jButton36.setBorder(null);
+
+        jButton37.setBackground(new java.awt.Color(0, 0, 0));
+        jButton37.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jButton37.setForeground(new java.awt.Color(255, 255, 255));
+        jButton37.setText("REFRESH");
+        jButton37.setBorder(null);
+
         javax.swing.GroupLayout ReceptionistPanelLayout = new javax.swing.GroupLayout(ReceptionistPanel);
         ReceptionistPanel.setLayout(ReceptionistPanelLayout);
         ReceptionistPanelLayout.setHorizontalGroup(
@@ -1291,20 +1525,27 @@ private void refreshAppointmentsToPay() {
             .addGroup(ReceptionistPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(ReceptionistPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE)
                     .addGroup(ReceptionistPanelLayout.createSequentialGroup()
                         .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 571, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton37, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton36, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         ReceptionistPanelLayout.setVerticalGroup(
             ReceptionistPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ReceptionistPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(57, Short.MAX_VALUE))
+                .addContainerGap(9, Short.MAX_VALUE)
+                .addGroup(ReceptionistPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ReceptionistPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton36, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jButton37, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel9, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(356, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("tab2", ReceptionistPanel);
@@ -1372,11 +1613,6 @@ private void refreshAppointmentsToPay() {
             .addGroup(jPanel13Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel13Layout.createSequentialGroup()
-                        .addComponent(jLabel19)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 294, Short.MAX_VALUE)
-                        .addComponent(jLabel18)
-                        .addGap(214, 214, 214))
                     .addGroup(jPanel13Layout.createSequentialGroup()
                         .addComponent(jLabel17)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -1390,10 +1626,14 @@ private void refreshAppointmentsToPay() {
                                 .addComponent(jButton25, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(12, 12, 12)
                                 .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel13Layout.createSequentialGroup()
-                                .addComponent(StaffName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel13Layout.createSequentialGroup()
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(StaffName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel19))
                                 .addGap(74, 74, 74)
-                                .addComponent(ServiceComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel18)
+                                    .addComponent(ServiceComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addGap(24, 24, 24))))
         );
         jPanel13Layout.setVerticalGroup(
@@ -1402,9 +1642,9 @@ private void refreshAppointmentsToPay() {
                 .addGap(7, 7, 7)
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel19)
-                    .addComponent(jLabel18))
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel19))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(StaffName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1412,7 +1652,7 @@ private void refreshAppointmentsToPay() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel13Layout.createSequentialGroup()
-                        .addGap(0, 1, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(jButton22, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel13Layout.createSequentialGroup()
@@ -1421,6 +1661,28 @@ private void refreshAppointmentsToPay() {
                     .addComponent(jButton9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        jButton26.setBackground(new java.awt.Color(0, 0, 0));
+        jButton26.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jButton26.setForeground(new java.awt.Color(255, 255, 255));
+        jButton26.setText("REFRESH");
+        jButton26.setBorder(null);
+        jButton26.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton26ActionPerformed(evt);
+            }
+        });
+
+        jButton27.setBackground(new java.awt.Color(0, 0, 0));
+        jButton27.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
+        jButton27.setForeground(new java.awt.Color(255, 255, 255));
+        jButton27.setText("LOG OUT");
+        jButton27.setBorder(null);
+        jButton27.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton27ActionPerformed(evt);
+            }
+        });
 
         StaffsJtable.setBackground(new java.awt.Color(204, 204, 204));
         StaffsJtable.setModel(new javax.swing.table.DefaultTableModel(
@@ -1446,6 +1708,11 @@ private void refreshAppointmentsToPay() {
                 return canEdit [columnIndex];
             }
         });
+        StaffsJtable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                StaffsJtableMouseClicked(evt);
+            }
+        });
         jScrollPane6.setViewportView(StaffsJtable);
         if (StaffsJtable.getColumnModel().getColumnCount() > 0) {
             StaffsJtable.getColumnModel().getColumn(0).setMaxWidth(80);
@@ -1453,43 +1720,23 @@ private void refreshAppointmentsToPay() {
             StaffsJtable.getColumnModel().getColumn(3).setResizable(false);
         }
 
-        jButton26.setBackground(new java.awt.Color(0, 0, 0));
-        jButton26.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
-        jButton26.setForeground(new java.awt.Color(255, 255, 255));
-        jButton26.setText("REFRESH");
-        jButton26.setBorder(null);
-        jButton26.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton26ActionPerformed(evt);
-            }
-        });
-
-        jButton27.setBackground(new java.awt.Color(0, 0, 0));
-        jButton27.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
-        jButton27.setForeground(new java.awt.Color(255, 255, 255));
-        jButton27.setText("LOG OUT");
-        jButton27.setBorder(null);
-        jButton27.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton27ActionPerformed(evt);
-            }
-        });
+        jScrollPane14.setViewportView(jScrollPane6);
 
         javax.swing.GroupLayout StaffPanelLayout = new javax.swing.GroupLayout(StaffPanel);
         StaffPanel.setLayout(StaffPanelLayout);
         StaffPanelLayout.setHorizontalGroup(
             StaffPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(StaffPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, StaffPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(StaffPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel13, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(StaffPanelLayout.createSequentialGroup()
+                .addGroup(StaffPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
+                    .addComponent(jPanel13, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, StaffPanelLayout.createSequentialGroup()
                         .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jButton26, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane6))
+                        .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         StaffPanelLayout.setVerticalGroup(
@@ -1503,12 +1750,18 @@ private void refreshAppointmentsToPay() {
                         .addComponent(jButton27, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane6, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
-                .addContainerGap(68, Short.MAX_VALUE))
+                .addGap(21, 21, 21)
+                .addComponent(jScrollPane14, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         jTabbedPane1.addTab("tab5", StaffPanel);
+
+        gshe.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                gsheMouseClicked(evt);
+            }
+        });
 
         ServiceJtable.setBackground(new java.awt.Color(204, 204, 204));
         ServiceJtable.setModel(new javax.swing.table.DefaultTableModel(
@@ -1535,6 +1788,11 @@ private void refreshAppointmentsToPay() {
             }
         });
         ServiceJtable.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        ServiceJtable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ServiceJtableMouseClicked(evt);
+            }
+        });
         gshe.setViewportView(ServiceJtable);
         if (ServiceJtable.getColumnModel().getColumnCount() > 0) {
             ServiceJtable.getColumnModel().getColumn(0).setMaxWidth(80);
@@ -1741,8 +1999,15 @@ private void refreshAppointmentsToPay() {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void RpBttmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RpBttmActionPerformed
+        jTabbedPane1.setSelectedIndex(1);
+        getReceptionist();
+        
+        
+    }//GEN-LAST:event_RpBttmActionPerformed
+
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        jTabbedPane1.setSelectedIndex(2);
+        jTabbedPane1.setSelectedIndex(3);
         refreshAppointment();
     }//GEN-LAST:event_jButton4ActionPerformed
 
@@ -1755,9 +2020,23 @@ private void refreshAppointmentsToPay() {
         refreshAppointmentServiceOptions();
     }//GEN-LAST:event_newAppointmentNavBtnActionPerformed
 
+    private void staffNavBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_staffNavBtnActionPerformed
+        jTabbedPane1.setSelectedIndex(4);
+        refreshService();
+        refreshStaff();
+        clearStaff();
+    }//GEN-LAST:event_staffNavBtnActionPerformed
+
+    private void ServiceBttmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ServiceBttmActionPerformed
+        jTabbedPane1.setSelectedIndex(5);
+        refreshService();
+        clearService();
+    }//GEN-LAST:event_ServiceBttmActionPerformed
+
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         jTabbedPane1.setSelectedIndex(0);
         refreshCustomer();
+        clearCustomer();
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void StaffName_txtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StaffName_txtActionPerformed
@@ -1777,6 +2056,8 @@ private void refreshAppointmentsToPay() {
         } else {
             Service selectedService = this.services.get(ServiceComboBox.getSelectedIndex());
             Staff.addStaff(staffName, selectedService.getServiceID());
+            clearStaff();
+            refreshStaff();
                 
         }
 
@@ -1813,6 +2094,8 @@ private void refreshAppointmentsToPay() {
         } else {
             double price = Double.parseDouble(servicePrice);
             Service.addService(serviceName,serviceDescription, price);
+            clearService();
+            refreshService();
                 
         }      
     }//GEN-LAST:event_jButton13ActionPerformed
@@ -1825,8 +2108,7 @@ private void refreshAppointmentsToPay() {
     int customerComboxIndex = newAppointmentCustomerCmbobx.getSelectedIndex();
     java.util.Date appointementDate = newAppointmentFormDate.getDate();
     
-//    String contactNo = ContactNo_txt.getText();
-//    java.util.Date selectedDate = ewDate.getDate();
+
     String startTimeStr = newAppointmentFormStartTime.getItemAt(newAppointmentFormStartTime.getSelectedIndex());
     String endTimeStr = newAppointmentFormEndTime.getItemAt(newAppointmentFormEndTime.getSelectedIndex());
     
@@ -1855,6 +2137,7 @@ private void refreshAppointmentsToPay() {
         
         this.newAppointmentService = null;
         this.newAppointmentServices = new ArrayList<>();
+        clearAppointment();
         refreshAppointmentServiceOptions();
     }//GEN-LAST:event_jButton16ActionPerformed
 
@@ -1875,6 +2158,11 @@ private void refreshAppointmentsToPay() {
     refreshService();
     clearService();
     }//GEN-LAST:event_jButton24ActionPerformed
+
+    private void DbBttmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DbBttmActionPerformed
+        jTabbedPane1.setSelectedIndex(0);
+        defaultDate();
+    }//GEN-LAST:event_DbBttmActionPerformed
 
     private void serviceDescription_txtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_serviceDescription_txtActionPerformed
         // TODO add your handling code here:
@@ -1897,7 +2185,7 @@ private void refreshAppointmentsToPay() {
             return;
         }
         int serviceId = (int) ServiceJtable.getValueAt(row, 0);
-
+        
         String serviceName = serviceName_txt.getText();
         String description = serviceDescription_txt.getText();
         String updatedPrice = servicePrice_txt.getText().trim();
@@ -1953,6 +2241,7 @@ private void refreshAppointmentsToPay() {
         Staff.deleteStaff(serviceId);
         refreshStaff();
         JOptionPane.showMessageDialog(StaffPanel, "Delete Successfully.");
+        clearStaff();
     }//GEN-LAST:event_jButton22ActionPerformed
 
     private void jButton25ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton25ActionPerformed
@@ -2000,6 +2289,7 @@ private void refreshAppointmentsToPay() {
         Customer.deleteCustomer(customerID);
         refreshCustomer();
         JOptionPane.showMessageDialog(CustomersPanel, "Delete Successfully.");
+        clearCustomer();
     }//GEN-LAST:event_jButton29ActionPerformed
 
     private void jButton30ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton30ActionPerformed
@@ -2012,8 +2302,15 @@ private void refreshAppointmentsToPay() {
         }
         
         int customerID = (int) CustomerJTable.getValueAt(row, 0);
+        
+
+        
+        
+       
         String customerName = Cname_txt.getText();
         String contactNo = Ccno_txt.getText();
+        
+        System.out.println(customerName + contactNo);
 
         if (customerName.isEmpty() || contactNo.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Please complete the form.");
@@ -2035,6 +2332,7 @@ private void refreshAppointmentsToPay() {
             JOptionPane.showMessageDialog(null, "Please complete the form.");
         } else {
             Customer.addCustomer(customerName,contactNo);
+            refreshCustomer();
                 
         }        
     }//GEN-LAST:event_jButton31ActionPerformed
@@ -2101,52 +2399,124 @@ private void refreshAppointmentsToPay() {
     }//GEN-LAST:event_newAppointmentStaffListMouseClicked
 
     private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
-    jTabbedPane1.setSelectedIndex(3);
+    jTabbedPane1.setSelectedIndex(2);
     refreshAppointment();
     refreshAppointmentsToPay();
     }//GEN-LAST:event_jButton10ActionPerformed
 
-    private void paymentServicesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paymentServicesTableMouseClicked
+    private void updatePaymentServicesTable () {
+        DefaultTableModel paymentServicesTableModel = (DefaultTableModel) paymentServicesTable.getModel();
+        paymentServicesTableModel.setRowCount(0);
+        
+     
+
+        if (this.selectedAppointment != null) {
+            for (AppointmentService appointmentService : this.selectedAppointment.items) {
+                    Object[] rowData = {
+                        appointmentService.service.getServiceName(),
+                        appointmentService.staff.getStaffName(),
+                        appointmentService.amount,
+                        appointmentService.tip,
+                    };
+
+                    paymentServicesTableModel.addRow(rowData);
+                }
+            PaymentCsName.setText(this.selectedAppointment.getCustomer().getCustomerName());
+            PaymentDate.setText(this.selectedAppointment.getDate().toString());
+            PaymentStTime.setText(this.selectedAppointment.getStartTime().toString());
+            PaymentEndTime.setText(this.selectedAppointment.getEndTime().toString());
+            
+            
+            
+            this.displayTotalToPay(this.selectedAppointment);
+        }
+    }
+    
+    private void DashboardDateChooserMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_DashboardDateChooserMouseClicked
+
+    }//GEN-LAST:event_DashboardDateChooserMouseClicked
+        
+    private void newAppointmentFormStartTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newAppointmentFormStartTimeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_newAppointmentFormStartTimeActionPerformed
+
+    private void CustomerJTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_CustomerJTableMouseClicked
+        int row = CustomerJTable.getSelectedRow();
+        String csName = CustomerJTable.getValueAt(row, 1).toString();
+        String csCN = CustomerJTable.getValueAt(row, 2).toString();
+
+        Cname_txt.setText(csName);
+        Ccno_txt.setText(csCN);
+    }//GEN-LAST:event_CustomerJTableMouseClicked
+
+    private void gsheMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_gsheMouseClicked
+        
+    }//GEN-LAST:event_gsheMouseClicked
+
+    private void ServiceJtableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ServiceJtableMouseClicked
+    int row = ServiceJtable.getSelectedRow();
+    String srName = ServiceJtable.getValueAt(row, 1).toString();
+    String srdescription = ServiceJtable.getValueAt(row, 2).toString();
+    String srupdatedPrice = ServiceJtable.getValueAt(row, 3).toString();
+    
+    serviceName_txt.setText(srName);
+    serviceDescription_txt.setText(srdescription);
+    servicePrice_txt.setText(srupdatedPrice);
+
+    }//GEN-LAST:event_ServiceJtableMouseClicked
+
+    private void StaffsJtableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_StaffsJtableMouseClicked
+    int row = StaffsJtable.getSelectedRow();
+    String stName = StaffsJtable.getValueAt(row, 1).toString();
+    
+    StaffName_txt.setText(stName);
+    }//GEN-LAST:event_StaffsJtableMouseClicked
+
+    private void DbcheckActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DbcheckActionPerformed
+    java.util.Date selectedDate = DashboardDateChooser.getDate();
+    
+    if (selectedDate != null) {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+        
+        String dateSales = dateFormatter.format(selectedDate);
+        
+        totalSales(dateSales);
+        refreshDashboard(dateSales);
+        
+        
+        
+    } else {
+        JOptionPane.showMessageDialog(DashboardPanel, "Select a Date");
+    }    
+    }//GEN-LAST:event_DbcheckActionPerformed
+
+    public void defaultDate() {
+    LocalDate defaultDate = LocalDate.now();
+    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    String dateSales = defaultDate.format(dateFormatter);
+    totalSales(dateSales);
+    refreshDashboard(dateSales);
+}
+
+    
+    private void jButton34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton34ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton34ActionPerformed
+
+    private void paymentAddTipButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAddTipButtonActionPerformed
         int index = paymentServicesTable.getSelectedRow();
 
-        paymentAddTipButton.setEnabled(index >= 0);
-        paymentAddTipInput.setEnabled(index >= 0);
+        if (index >= 0 && !paymentAddTipInput.getText().isEmpty()) {
 
-        if (index >= 0) {
-            AppointmentService selectedAppointmentService = this.selectedAppointment.items.get(index);
+            AppointmentService seleAppointmentService = this.selectedAppointment.items.get(index);
+            seleAppointmentService.tip = Double.parseDouble(paymentAddTipInput.getText());
+            seleAppointmentService.saveTip();
 
-            paymentAddTipInput.setText(String.valueOf(selectedAppointmentService.tip));
+            this.selectedAppointment.items.set(index, seleAppointmentService);
+
+            updatePaymentServicesTable();
         }
-    }//GEN-LAST:event_paymentServicesTableMouseClicked
-
-    private void paymentAppointmentComboboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_paymentAppointmentComboboxItemStateChanged
-        if (paymentAppointmentCombobox.getSelectedIndex() >= 0) {
-            for (Appointment appointment : this.appointments) {
-                if (appointment.appointmentID.toString().equals(paymentAppointmentCombobox.getSelectedItem().toString())) {
-                    this.selectedAppointment = appointment;
-                    break;
-                }
-            }
-        }
-
-        PaymentCsName.setText(this.selectedAppointment.getCustomer().getCustomerName());
-        PaymentDate.setText(this.selectedAppointment.getDate().toString());
-        PaymentStTime.setText(this.selectedAppointment.getStartTime().toString());
-        PaymentEndTime.setText(this.selectedAppointment.getEndTime().toString());
-        this.updatePaymentServicesTable();
-    }//GEN-LAST:event_paymentAppointmentComboboxItemStateChanged
-
-    private void paymentAppointmentComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAppointmentComboboxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_paymentAppointmentComboboxActionPerformed
-
-    private void paymentAddTipInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paymentAddTipInputKeyReleased
-        try {
-            Integer.parseInt(paymentAddTipInput.getText());
-        } catch (NumberFormatException nfe) {
-            paymentAddTipInput.setText("");
-        }
-    }//GEN-LAST:event_paymentAddTipInputKeyReleased
+    }//GEN-LAST:event_paymentAddTipButtonActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         Payment payment = new Payment(UUID.randomUUID(), this.selectedAppointment, new java.util.Date());
@@ -2166,41 +2536,51 @@ private void refreshAppointmentsToPay() {
 
     }//GEN-LAST:event_jButton5ActionPerformed
 
-    private void paymentAddTipButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAddTipButtonActionPerformed
+    private void paymentAddTipInputKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_paymentAddTipInputKeyReleased
+        try {
+            Integer.parseInt(paymentAddTipInput.getText());
+        } catch (NumberFormatException nfe) {
+            paymentAddTipInput.setText("");
+        }
+    }//GEN-LAST:event_paymentAddTipInputKeyReleased
+
+    private void paymentAddTipInputActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAddTipInputActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_paymentAddTipInputActionPerformed
+
+    private void paymentAppointmentComboboxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAppointmentComboboxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_paymentAppointmentComboboxActionPerformed
+
+    private void paymentAppointmentComboboxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_paymentAppointmentComboboxItemStateChanged
+        if (paymentAppointmentCombobox.getSelectedIndex() >= 0) {
+            this.selectedAppointment = this.appointmentsToPay.get(paymentAppointmentCombobox.getSelectedIndex());
+        }
+
+        this.updatePaymentServicesTable();
+    }//GEN-LAST:event_paymentAppointmentComboboxItemStateChanged
+
+    private void paymentServicesTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_paymentServicesTableMouseClicked
         int index = paymentServicesTable.getSelectedRow();
 
-        if (index >= 0 && !paymentAddTipInput.getText().isEmpty()) {
+        paymentAddTipButton.setEnabled(index >= 0);
+        paymentAddTipInput.setEnabled(index >= 0);
 
-            AppointmentService seleAppointmentService = this.selectedAppointment.items.get(index);
-            seleAppointmentService.tip = Double.parseDouble(paymentAddTipInput.getText());
-            seleAppointmentService.saveTip();
+        if (index >= 0) {
+            AppointmentService selectedAppointmentService = this.selectedAppointment.items.get(index);
 
-            this.selectedAppointment.items.set(index, seleAppointmentService);
-
-            updatePaymentServicesTable();
+            paymentAddTipInput.setText(String.valueOf(selectedAppointmentService.tip));
         }
-    }//GEN-LAST:event_paymentAddTipButtonActionPerformed
+    }//GEN-LAST:event_paymentServicesTableMouseClicked
 
-    private void updatePaymentServicesTable () {
-        DefaultTableModel paymentServicesTableModel = (DefaultTableModel) paymentServicesTable.getModel();
-        paymentServicesTableModel.setRowCount(0);
+    private void formWindowActivated(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowActivated
+        DbBttm.setVisible(false);
+        staffNavBtn.setVisible(false);
+        ServiceBttm.setVisible(false);
+        RpBttm.setVisible(false);
+        refreshCustomer();
+    }//GEN-LAST:event_formWindowActivated
 
-        if (this.selectedAppointment != null) {
-            for (AppointmentService appointmentService : this.selectedAppointment.items) {
-                    Object[] rowData = {
-                        appointmentService.service.getServiceName(),
-                        appointmentService.staff.getStaffName(),
-                        appointmentService.amount,
-                        appointmentService.tip,
-                    };
-
-                    paymentServicesTableModel.addRow(rowData);
-                }
-                
-            this.displayTotalToPay(this.selectedAppointment);
-        }
-    }
-    
     private void displayTotalToPay (Appointment appointment) {
         paymentTotalLabel.setText(String.valueOf(appointment.getTotal()));
     }
@@ -2227,7 +2607,11 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JPanel CreateAppoinmentPanel;
     private javax.swing.JTable CustomerJTable;
     private javax.swing.JPanel CustomersPanel;
+    private com.toedter.calendar.JDateChooser DashboardDateChooser;
     private javax.swing.JPanel DashboardPanel;
+    private javax.swing.JTable DashboardTable;
+    private javax.swing.JButton DbBttm;
+    private javax.swing.JButton Dbcheck;
     private javax.swing.JLabel PaymentCsName;
     private javax.swing.JLabel PaymentDate;
     private javax.swing.JPanel PaymentDetailsPanel;
@@ -2235,6 +2619,8 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JLabel PaymentStTime;
     private javax.swing.JTable ReceptionistJtable;
     private javax.swing.JPanel ReceptionistPanel;
+    private javax.swing.JButton RpBttm;
+    private javax.swing.JButton ServiceBttm;
     private javax.swing.JComboBox<String> ServiceComboBox;
     private javax.swing.JTable ServiceJtable;
     private javax.swing.JPanel ServicePane;
@@ -2263,11 +2649,13 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JButton jButton31;
     private javax.swing.JButton jButton32;
     private javax.swing.JButton jButton33;
+    private javax.swing.JButton jButton34;
+    private javax.swing.JButton jButton36;
+    private javax.swing.JButton jButton37;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private com.toedter.calendar.JDateChooser jDateChooser1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -2296,13 +2684,13 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
     private javax.swing.JLabel jLabel34;
-    private javax.swing.JLabel jLabel35;
     private javax.swing.JLabel jLabel37;
     private javax.swing.JLabel jLabel38;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -2314,10 +2702,13 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane10;
     private javax.swing.JScrollPane jScrollPane11;
     private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
+    private javax.swing.JScrollPane jScrollPane14;
     private javax.swing.JScrollPane jScrollPane15;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -2328,7 +2719,6 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JComboBox<String> newAppointmentCustomerCmbobx;
     private com.toedter.calendar.JDateChooser newAppointmentFormDate;
     private javax.swing.JComboBox<String> newAppointmentFormEndTime;
@@ -2346,5 +2736,6 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JTextField serviceDescription_txt;
     private javax.swing.JTextField serviceName_txt;
     private javax.swing.JTextField servicePrice_txt;
+    private javax.swing.JButton staffNavBtn;
     // End of variables declaration//GEN-END:variables
 }
