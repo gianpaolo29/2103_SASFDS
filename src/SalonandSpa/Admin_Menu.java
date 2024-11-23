@@ -169,6 +169,26 @@ private void refreshAppointmentsToPay() {
         }
     }
     
+    public void refreshDashboard(String date) {
+    // Fetch the data for the given date
+    List<Object[]> services = AppointmentService.getServiceByDate(date);
+
+    // Define column headers
+    String[] columnNames = {"Service Name", "Service Count", "Total Sales"};
+
+    // Create a table model with the column names
+    DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+    // Add each row from the service list to the model
+    for (Object[] service : services) {
+        model.addRow(service);
+    }
+
+    // Set the model to the JTable
+    DashboardTable.setModel(model);
+}
+
+    
     private void refreshAppointmentServiceOptions () {
         this.appointmentServiceOptions = new ArrayList<>();
         this.appointmentStaffOptions = new ArrayList<>();
@@ -265,7 +285,7 @@ private void refreshAppointmentsToPay() {
         DashboardDateChooser = new com.toedter.calendar.JDateChooser();
         jScrollPane13 = new javax.swing.JScrollPane();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        DashboardTable = new javax.swing.JTable();
         jButton34 = new javax.swing.JButton();
         Dbcheck = new javax.swing.JButton();
         ReceptionistPanel = new javax.swing.JPanel();
@@ -567,24 +587,36 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jTable1.setBackground(new java.awt.Color(204, 204, 204));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        DashboardTable.setBackground(new java.awt.Color(204, 204, 204));
+        DashboardTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Service", "Sales"
+                "Service", "Count", "Sales"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Double.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
         });
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(DashboardTable);
+        if (DashboardTable.getColumnModel().getColumnCount() > 0) {
+            DashboardTable.getColumnModel().getColumn(0).setResizable(false);
+            DashboardTable.getColumnModel().getColumn(1).setResizable(false);
+            DashboardTable.getColumnModel().getColumn(2).setResizable(false);
+        }
 
         jScrollPane13.setViewportView(jScrollPane1);
 
@@ -593,6 +625,11 @@ private void refreshAppointmentsToPay() {
         jButton34.setForeground(new java.awt.Color(255, 255, 255));
         jButton34.setText("LOG OUT");
         jButton34.setBorder(null);
+        jButton34.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton34ActionPerformed(evt);
+            }
+        });
 
         Dbcheck.setBackground(new java.awt.Color(0, 153, 0));
         Dbcheck.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
@@ -615,29 +652,32 @@ private void refreshAppointmentsToPay() {
                     .addComponent(jScrollPane13, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
                     .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton34, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(DashboardDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(Dbcheck, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6)))
+                        .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton34, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
+                                .addComponent(DashboardDateChooser, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Dbcheck, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(6, 6, 6)))))
                 .addContainerGap())
         );
         DashboardPanelLayout.setVerticalGroup(
             DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(DashboardPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton34, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(DashboardDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(Dbcheck, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                .addContainerGap(10, Short.MAX_VALUE)
+                .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
+                        .addComponent(jButton34, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(DashboardPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(DashboardDateChooser, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(Dbcheck, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(24, 24, 24))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, DashboardPanelLayout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)))
                 .addComponent(jPanel10, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
                 .addComponent(jScrollPane13, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2473,6 +2513,7 @@ private void refreshAppointmentsToPay() {
         String dateSales = dateFormatter.format(selectedDate);
         
         totalSales(dateSales);
+        refreshDashboard(dateSales);
         
         
         
@@ -2480,6 +2521,10 @@ private void refreshAppointmentsToPay() {
         JOptionPane.showMessageDialog(DashboardPanel, "Select a Date");
     }    
     }//GEN-LAST:event_DbcheckActionPerformed
+
+    private void jButton34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton34ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton34ActionPerformed
 
     private void displayTotalToPay (Appointment appointment) {
         paymentTotalLabel.setText(String.valueOf(appointment.getTotal()));
@@ -2509,6 +2554,7 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JPanel CustomersPanel;
     private com.toedter.calendar.JDateChooser DashboardDateChooser;
     private javax.swing.JPanel DashboardPanel;
+    private javax.swing.JTable DashboardTable;
     private javax.swing.JButton Dbcheck;
     private javax.swing.JLabel PaymentCsName;
     private javax.swing.JLabel PaymentDate;
@@ -2617,7 +2663,6 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JComboBox<String> newAppointmentCustomerCmbobx;
     private com.toedter.calendar.JDateChooser newAppointmentFormDate;
     private javax.swing.JComboBox<String> newAppointmentFormEndTime;

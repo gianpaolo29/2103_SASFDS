@@ -223,4 +223,10 @@ public class Appointment {
         }
     }
     
+//  SELECT service.ServiceName AS ServiceName, COUNT(appointmentservice.ServiceID) AS ServiceCount,
+//  SUM(appointmentservice.Amount) AS TotalSales FROM appointmentservice JOIN appointment ON appointment.AppointmentID = appointmentservice.AppointmentID 
+//  JOIN service ON service.ServiceID = appointmentservice.ServiceID WHERE appointment.Date = '2024-11-21' 
+//  AND appointment.Status = 'Paid' GROUP BY service.ServiceName;
+    
+    
 }

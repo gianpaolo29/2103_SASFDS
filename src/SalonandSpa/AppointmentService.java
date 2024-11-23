@@ -115,6 +115,45 @@ public class AppointmentService {
             DatabaseConnector.closeConnection(conn);
         }
     }
+    public static List<Object[]> getServiceByDate(String date) {
+    List<Object[]> services = new ArrayList<>();
+
+    Connection conn = DatabaseConnector.connect();
+
+    String query = "SELECT service.ServiceName AS ServiceName, " +
+                   "COUNT(appointmentservice.ServiceID) AS ServiceCount, " +
+                   "SUM(appointmentservice.Amount) AS TotalSales " +
+                   "FROM appointmentservice " +
+                   "JOIN appointment ON appointment.AppointmentID = appointmentservice.AppointmentID " +
+                   "JOIN service ON service.ServiceID = appointmentservice.ServiceID " +
+                   "WHERE appointment.Date = ? AND appointment.Status = 'Paid' " +
+                   "GROUP BY service.ServiceName";
+
+    try (PreparedStatement statement = conn.prepareStatement(query)) {
+        statement.setString(1, date);
+        ResultSet resultSet = statement.executeQuery();
+
+        while (resultSet.next()) {
+            String serviceName = resultSet.getString("ServiceName");
+            int serviceCount = resultSet.getInt("ServiceCount");
+            double totalSales = resultSet.getDouble("TotalSales");
+
+            // Store the data as an Object array and add it to the list
+            services.add(new Object[]{serviceName, serviceCount, totalSales});
+        }
+
+        resultSet.close();
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.err.println("Error while fetching services: " + e.getMessage());
+    } finally {
+        DatabaseConnector.closeConnection(conn);
+    }
+
+    return services;
+}
+
+}
     
    
-}
+
