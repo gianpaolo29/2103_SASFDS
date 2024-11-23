@@ -41,7 +41,7 @@ public class Service {
 
         try {
             Statement statement = conn.createStatement();
-            String selectQuery = "SELECT * FROM service";
+            String selectQuery = "SELECT * FROM service WHERE Status = 'Active'";
             ResultSet resultSet = statement.executeQuery(selectQuery);
 
             while (resultSet.next()) {
@@ -92,7 +92,7 @@ public class Service {
     }
         public static void deleteService(int serviceId) {
         Connection conn = DatabaseConnector.connect();
-        String deleteQuery = "DELETE FROM service WHERE ServiceID = ?";
+        String deleteQuery = "UPDATE service SET Status = 'Inactive' WHERE ServiceID = ?";
                     
         try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
             statement.setInt(1, serviceId);

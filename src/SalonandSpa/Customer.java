@@ -72,7 +72,7 @@ public class Customer {
 
         try {
             Statement statement = conn.createStatement();
-            String selectQuery = "SELECT * FROM customer";
+            String selectQuery = "SELECT * FROM customer WHERE Status = 'Active'";
             ResultSet resultSet = statement.executeQuery(selectQuery);
 
             while (resultSet.next()) {
@@ -117,7 +117,7 @@ public class Customer {
 
     public static void deleteCustomer(int customerId) {
         Connection conn = DatabaseConnector.connect();
-        String deleteQuery = "DELETE FROM customer WHERE CustomerID = ?";
+        String deleteQuery = "UPDATE customer SET Status = 'Inactive' WHERE CustomerID = ?";
                     
         try (PreparedStatement statement = conn.prepareStatement(deleteQuery)) {
             statement.setInt(1, customerId);
