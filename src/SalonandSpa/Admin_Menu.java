@@ -2233,6 +2233,9 @@ private void refreshAppointmentsToPay() {
     this.newAppointmentServices = new ArrayList<>();
     refreshAppointmentServiceOptions();
     clearAppointment();
+                DefaultTableModel newAppointmentServicesTableModel = (DefaultTableModel) newAppointmentServicesTable.getModel();
+
+            newAppointmentServicesTableModel.setRowCount(0);
     }//GEN-LAST:event_jButton15ActionPerformed
 
     private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
