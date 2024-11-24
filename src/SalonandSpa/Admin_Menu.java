@@ -764,6 +764,11 @@ private void refreshAppointmentsToPay() {
         jButton36.setForeground(new java.awt.Color(255, 255, 255));
         jButton36.setText("LOG OUT");
         jButton36.setBorder(null);
+        jButton36.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton36ActionPerformed(evt);
+            }
+        });
 
         jButton37.setBackground(new java.awt.Color(0, 0, 0));
         jButton37.setFont(new java.awt.Font("sansserif", 1, 12)); // NOI18N
@@ -2635,7 +2640,7 @@ private void refreshAppointmentsToPay() {
 
     
     private void jButton34ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton34ActionPerformed
-        // TODO add your handling code here:
+  logout();
     }//GEN-LAST:event_jButton34ActionPerformed
 
     private void paymentAddTipButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paymentAddTipButtonActionPerformed
@@ -2745,6 +2750,10 @@ private void refreshAppointmentsToPay() {
         jTabbedPane1.setSelectedIndex(8);
         refreshTransaction();
     }//GEN-LAST:event_jButton11ActionPerformed
+
+    private void jButton36ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton36ActionPerformed
+    logout();
+    }//GEN-LAST:event_jButton36ActionPerformed
     
     
     private void displayTotalToPay (Appointment appointment) {
