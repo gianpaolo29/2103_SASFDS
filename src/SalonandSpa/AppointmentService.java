@@ -138,7 +138,7 @@ public class AppointmentService {
             int serviceCount = resultSet.getInt("ServiceCount");
             double totalSales = resultSet.getDouble("TotalSales");
 
-            // Store the data as an Object array and add it to the list
+
             services.add(new Object[]{serviceName, serviceCount, totalSales});
         }
 
