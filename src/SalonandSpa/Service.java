@@ -68,7 +68,7 @@ public class Service {
 
     // Method to add a new service to the database
     public static void addService(String serviceName, String description, double price) {
-        Connection conn = DatabaseConnector.connect();
+          Connection conn = DatabaseConnector.connect();
         String insertQuery = "INSERT INTO service (ServiceName, Description, Price) VALUES (?, ?, ?)";
 
         try (PreparedStatement preparedStatement = conn.prepareStatement(insertQuery)) {
