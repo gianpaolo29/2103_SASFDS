@@ -109,13 +109,13 @@ public class Staff {
         }
     }    
         
-        public static void updateStaff(int staffID, String staffName, String service) {
+        public static void updateStaff(int staffID, String staffName, int serviceID) {
         Connection conn = DatabaseConnector.connect();
-        String updateQuery = "UPDATE staff SET staffName = ?, service  =  ? WHERE staffID = ?";
+        String updateQuery = "UPDATE staff SET staffName = ?, serviceID  =  ? WHERE staffID = ?";
         try (PreparedStatement statement = conn.prepareStatement(updateQuery)) {
             
             statement.setString(1, staffName);
-            statement.setString(2, service);
+            statement.setInt(2, serviceID);
             statement.setInt(3, staffID);
             
             System.out.println(updateQuery);

@@ -477,6 +477,7 @@ private void refreshAppointmentsToPay() {
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/rsz_2appointment-icon-3-removebg-preview.png"))); // NOI18N
         jButton4.setText("Appointments");
         jButton4.setBorder(null);
+        jButton4.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton4.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -485,10 +486,11 @@ private void refreshAppointmentsToPay() {
         });
 
         newAppointmentNavBtn.setBackground(new java.awt.Color(255, 255, 255));
-        newAppointmentNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        newAppointmentNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         newAppointmentNavBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/CreateAppointment.png"))); // NOI18N
         newAppointmentNavBtn.setText("New Appointments");
         newAppointmentNavBtn.setBorder(null);
+        newAppointmentNavBtn.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         newAppointmentNavBtn.setPreferredSize(new java.awt.Dimension(7, 28));
         newAppointmentNavBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -525,6 +527,7 @@ private void refreshAppointmentsToPay() {
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Customers.png"))); // NOI18N
         jButton8.setText("Customers");
         jButton8.setBorder(null);
+        jButton8.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         jButton8.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -537,6 +540,7 @@ private void refreshAppointmentsToPay() {
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Payment.png"))); // NOI18N
         jButton10.setText("Payments");
         jButton10.setBorder(null);
+        jButton10.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton10.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2464,12 +2468,12 @@ private void refreshAppointmentsToPay() {
         int staffId = (int) StaffsJtable.getValueAt(row, 0);
 
         String staffName = StaffName_txt.getText();
-        String service = ServiceComboBox.getItemAt(ServiceComboBox.getSelectedIndex());
+        Service selectedService = this.services.get(ServiceComboBox.getSelectedIndex());
 
-        if (staffName.isEmpty() || service.isEmpty()) {
+        if (staffName.isEmpty() || ServiceComboBox.getSelectedIndex() < 0) {
             JOptionPane.showMessageDialog(null, "Please complete the form.");
         } else {
-            Staff.updateStaff(staffId, staffName, service);
+            Staff.updateStaff(staffId, staffName, selectedService.getServiceID());
             clearStaff();
             refreshStaff();
             JOptionPane.showMessageDialog(ServicePane, "Update Successfully.");

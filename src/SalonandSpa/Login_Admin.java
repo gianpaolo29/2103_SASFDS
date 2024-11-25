@@ -43,10 +43,9 @@ public class Login_Admin extends javax.swing.JFrame {
         jPanel1.setPreferredSize(new java.awt.Dimension(800, 500));
         jPanel1.setLayout(null);
 
-        Right.setBackground(new java.awt.Color(0, 102, 255));
+        Right.setBackground(new java.awt.Color(153, 255, 255));
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Icon.png"))); // NOI18N
-        jLabel5.setText("jLabel5");
 
         javax.swing.GroupLayout RightLayout = new javax.swing.GroupLayout(Right);
         Right.setLayout(RightLayout);
@@ -91,7 +90,7 @@ public class Login_Admin extends javax.swing.JFrame {
 
         jLabel3.setBackground(new java.awt.Color(255, 255, 255));
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 102, 255));
+        jLabel3.setForeground(new java.awt.Color(102, 255, 255));
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("LOGIN");
 
@@ -99,7 +98,7 @@ public class Login_Admin extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(102, 102, 102));
         jLabel4.setText("Username");
 
-        jButton2.setBackground(new java.awt.Color(0, 102, 255));
+        jButton2.setBackground(new java.awt.Color(102, 255, 255));
         jButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jButton2.setForeground(new java.awt.Color(255, 255, 255));
         jButton2.setText("Log in");

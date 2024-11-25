@@ -442,12 +442,13 @@ private void refreshAppointmentsToPay() {
 
         jPanel2.setBackground(new java.awt.Color(51, 51, 51));
 
-        jButton1.setBackground(new java.awt.Color(255, 255, 255));
+        jButton1.setBackground(new java.awt.Color(204, 204, 204));
         jButton1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/rsz_dashboard_17937697.png"))); // NOI18N
         jButton1.setText("Dashboard");
         jButton1.setBorder(null);
         jButton1.setBorderPainted(false);
+        jButton1.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton1.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -465,6 +466,7 @@ private void refreshAppointmentsToPay() {
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/rsz_2desk_857717.png"))); // NOI18N
         jButton2.setText("Receptionists");
         jButton2.setBorder(null);
+        jButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton2.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -477,6 +479,7 @@ private void refreshAppointmentsToPay() {
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/rsz_2appointment-icon-3-removebg-preview.png"))); // NOI18N
         jButton4.setText("Appointments");
         jButton4.setBorder(null);
+        jButton4.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton4.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -485,10 +488,11 @@ private void refreshAppointmentsToPay() {
         });
 
         newAppointmentNavBtn.setBackground(new java.awt.Color(255, 255, 255));
-        newAppointmentNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        newAppointmentNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         newAppointmentNavBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/CreateAppointment.png"))); // NOI18N
         newAppointmentNavBtn.setText("New Appointments");
         newAppointmentNavBtn.setBorder(null);
+        newAppointmentNavBtn.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         newAppointmentNavBtn.setPreferredSize(new java.awt.Dimension(7, 28));
         newAppointmentNavBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -501,6 +505,7 @@ private void refreshAppointmentsToPay() {
         staffNavBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Staff.png"))); // NOI18N
         staffNavBtn.setText("Staffs");
         staffNavBtn.setBorder(null);
+        staffNavBtn.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         staffNavBtn.setPreferredSize(new java.awt.Dimension(7, 28));
         staffNavBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -513,6 +518,7 @@ private void refreshAppointmentsToPay() {
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Service.png"))); // NOI18N
         jButton7.setText("Services");
         jButton7.setBorder(null);
+        jButton7.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton7.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton7.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -525,6 +531,7 @@ private void refreshAppointmentsToPay() {
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Customers.png"))); // NOI18N
         jButton8.setText("Customers");
         jButton8.setBorder(null);
+        jButton8.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton8.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton8.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -537,6 +544,7 @@ private void refreshAppointmentsToPay() {
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Payment.png"))); // NOI18N
         jButton10.setText("Payments");
         jButton10.setBorder(null);
+        jButton10.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton10.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton10.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -549,6 +557,7 @@ private void refreshAppointmentsToPay() {
         jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Transacrtion.png"))); // NOI18N
         jButton11.setText("Transaction");
         jButton11.setBorder(null);
+        jButton11.setHorizontalAlignment(javax.swing.SwingConstants.LEADING);
         jButton11.setPreferredSize(new java.awt.Dimension(7, 28));
         jButton11.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -571,21 +580,20 @@ private void refreshAppointmentsToPay() {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton8, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton7, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel39, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(staffNavBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 151, Short.MAX_VALUE)
-                        .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton4, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(newAppointmentNavBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 154, Short.MAX_VALUE)
+                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(staffNavBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton11, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(27, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -596,7 +604,7 @@ private void refreshAppointmentsToPay() {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel1)
                 .addGap(5, 5, 5)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -658,7 +666,7 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        DashboardTable.setBackground(new java.awt.Color(102, 102, 102));
+        DashboardTable.setBackground(new java.awt.Color(204, 204, 204));
         DashboardTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -2200,9 +2208,6 @@ private void refreshAppointmentsToPay() {
             }
         });
         jScrollPane16.setViewportView(TransactionJtable);
-        if (TransactionJtable.getColumnModel().getColumnCount() > 0) {
-            TransactionJtable.getColumnModel().getColumn(3).setResizable(false);
-        }
 
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
@@ -2422,6 +2427,7 @@ private void refreshAppointmentsToPay() {
             Service.updateService(serviceId, serviceName, description, price);
             refreshService();
             JOptionPane.showMessageDialog(ServicePane, "Update Successfully.");
+            clearService();
         }
         
 
@@ -2467,12 +2473,12 @@ private void refreshAppointmentsToPay() {
         int staffId = (int) StaffsJtable.getValueAt(row, 0);
 
         String staffName = StaffName_txt.getText();
-        String service = ServiceComboBox.getItemAt(ServiceComboBox.getSelectedIndex());
+        Service selectedService = this.services.get(ServiceComboBox.getSelectedIndex());
 
-        if (staffName.isEmpty() || service.isEmpty()) {
+        if (staffName.isEmpty() || ServiceComboBox.getSelectedIndex() < 0) {
             JOptionPane.showMessageDialog(null, "Please complete the form.");
         } else {
-            Staff.updateStaff(staffId, staffName, service);
+            Staff.updateStaff(staffId, staffName, selectedService.getServiceID());
             clearStaff();
             refreshStaff();
             JOptionPane.showMessageDialog(ServicePane, "Update Successfully.");
