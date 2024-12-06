@@ -189,7 +189,7 @@ public class Appointment {
                         items.add(appointmentService);
                     }
                 }
-                
+               
                 Appointment appointment = new Appointment(appointmendId, customer, date, startTime, endTime, status, items);
                 appointments.add(appointment);
             }

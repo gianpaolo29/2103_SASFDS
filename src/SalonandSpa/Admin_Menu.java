@@ -426,6 +426,10 @@ private void refreshAppointmentsToPay() {
         jLabel35 = new javax.swing.JLabel();
         jScrollPane16 = new javax.swing.JScrollPane();
         TransactionJtable = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
+        SearchName_Txt = new javax.swing.JTextField();
+        jButton6 = new javax.swing.JButton();
+        jButton12 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Dashboard");
@@ -461,7 +465,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(255, 255, 255));
         jButton2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/rsz_2desk_857717.png"))); // NOI18N
         jButton2.setText("Receptionists");
@@ -474,7 +477,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jButton4.setBackground(new java.awt.Color(255, 255, 255));
         jButton4.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/rsz_2appointment-icon-3-removebg-preview.png"))); // NOI18N
         jButton4.setText("Appointments");
@@ -487,8 +489,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        newAppointmentNavBtn.setBackground(new java.awt.Color(255, 255, 255));
-        newAppointmentNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 12)); // NOI18N
         newAppointmentNavBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/CreateAppointment.png"))); // NOI18N
         newAppointmentNavBtn.setText("New Appointments");
         newAppointmentNavBtn.setBorder(null);
@@ -500,7 +500,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        staffNavBtn.setBackground(new java.awt.Color(255, 255, 255));
         staffNavBtn.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         staffNavBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Staff.png"))); // NOI18N
         staffNavBtn.setText("Staffs");
@@ -513,7 +512,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jButton7.setBackground(new java.awt.Color(255, 255, 255));
         jButton7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Service.png"))); // NOI18N
         jButton7.setText("Services");
@@ -526,7 +524,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jButton8.setBackground(new java.awt.Color(255, 255, 255));
         jButton8.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Customers.png"))); // NOI18N
         jButton8.setText("Customers");
@@ -539,7 +536,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jButton10.setBackground(new java.awt.Color(255, 255, 255));
         jButton10.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Payment.png"))); // NOI18N
         jButton10.setText("Payments");
@@ -552,7 +548,6 @@ private void refreshAppointmentsToPay() {
             }
         });
 
-        jButton11.setBackground(new java.awt.Color(255, 255, 255));
         jButton11.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/SalonandSpa/Transacrtion.png"))); // NOI18N
         jButton11.setText("Transaction");
@@ -1606,12 +1601,9 @@ private void refreshAppointmentsToPay() {
                         .addGap(24, 24, 24))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel15Layout.createSequentialGroup()
                         .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel15Layout.createSequentialGroup()
-                                .addComponent(serviceName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 98, Short.MAX_VALUE))
-                            .addGroup(jPanel15Layout.createSequentialGroup()
-                                .addComponent(jLabel27)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                            .addComponent(serviceName_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel27))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(servicePrice_txt, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel29))
@@ -2209,6 +2201,22 @@ private void refreshAppointmentsToPay() {
         });
         jScrollPane16.setViewportView(TransactionJtable);
 
+        jLabel3.setText("Search Name:");
+
+        jButton6.setText("Find");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
+
+        jButton12.setText("Cancel");
+        jButton12.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton12ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
@@ -2216,11 +2224,23 @@ private void refreshAppointmentsToPay() {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane16, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
                     .addGroup(jPanel6Layout.createSequentialGroup()
-                        .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addGap(6, 6, 6)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(SearchName_Txt, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(17, 17, 17)
+                        .addComponent(jButton6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton12)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel6Layout.createSequentialGroup()
+                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane16, javax.swing.GroupLayout.DEFAULT_SIZE, 588, Short.MAX_VALUE)
+                            .addGroup(jPanel6Layout.createSequentialGroup()
+                                .addComponent(jLabel35, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2228,7 +2248,15 @@ private void refreshAppointmentsToPay() {
                 .addContainerGap()
                 .addComponent(jLabel35)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane16, javax.swing.GroupLayout.DEFAULT_SIZE, 454, Short.MAX_VALUE)
+                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(SearchName_Txt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton6)
+                        .addComponent(jButton12)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane16, javax.swing.GroupLayout.DEFAULT_SIZE, 418, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -2890,8 +2918,64 @@ private void refreshAppointmentsToPay() {
     private void newAppointmentFormEndTimeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newAppointmentFormEndTimeActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_newAppointmentFormEndTimeActionPerformed
-    
-    
+
+    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+    refreshTransaction();
+    }//GEN-LAST:event_jButton12ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    String searchName  = SearchName_Txt.getText();
+    searchName(searchName);
+    SearchName_Txt.setText("");
+    }//GEN-LAST:event_jButton6ActionPerformed
+    public void searchName(String searchName) {
+    if (searchName.trim().isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Please enter a name to search.", "Input Error", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    String selectQuery = "SELECT c.Name AS CustomerName, a.Date AS AppointmentDate, " +
+                         "GROUP_CONCAT(s.ServiceName SEPARATOR ', ') AS Services, " +
+                         "SUM(asv.Amount) AS TotalAmount " +
+                         "FROM customer c " +
+                         "JOIN appointment a ON c.CustomerID = a.CustomerID " +
+                         "JOIN appointmentservice asv ON a.AppointmentID = asv.AppointmentID " +
+                         "JOIN service s ON asv.ServiceID = s.ServiceID " +
+                         "WHERE a.Status = 'PAID' AND c.Name = ? " + // Changed OR to AND
+                         "GROUP BY c.CustomerID, c.Name, a.Date, a.AppointmentID " +
+                         "ORDER BY a.Date, c.Name;";
+
+    try (Connection conn = DatabaseConnector.connect();
+         PreparedStatement statement = conn.prepareStatement(selectQuery)) {
+
+        DefaultTableModel transaDefaultTableModel = (DefaultTableModel) TransactionJtable.getModel();
+        transaDefaultTableModel.setRowCount(0);
+
+        statement.setString(1, searchName);
+
+        // Execute the query
+        ResultSet resultSet = statement.executeQuery();
+
+         if (!resultSet.next()) {
+            JOptionPane.showMessageDialog(null, "No transactions found for the provided name.", "No Results", JOptionPane.INFORMATION_MESSAGE);
+            refreshTransaction();
+            return;
+        }
+
+        do {
+            String customerName = resultSet.getString("CustomerName");
+            String appointmentDate = resultSet.getString("AppointmentDate");
+            String service = resultSet.getString("Services");
+            double amount = resultSet.getDouble("TotalAmount");
+            Object[] rowData = {customerName, appointmentDate, service, amount};
+            transaDefaultTableModel.addRow(rowData);
+        } while (resultSet.next());
+
+    } catch (Exception e) {
+        // Log the error and show a user-friendly message
+        e.printStackTrace();
+        JOptionPane.showMessageDialog(null, "Error fetching customer data: " + e.getMessage(),"Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }
     private void displayTotalToPay (Appointment appointment) {
         paymentTotalLabel.setText(String.valueOf(appointment.getTotal()));
     }
@@ -2929,6 +3013,7 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JLabel PaymentStTime;
     private javax.swing.JTable ReceptionistJtable;
     private javax.swing.JPanel ReceptionistPanel;
+    private javax.swing.JTextField SearchName_Txt;
     private javax.swing.JComboBox<String> ServiceComboBox;
     private javax.swing.JTable ServiceJtable;
     private javax.swing.JPanel ServicePane;
@@ -2941,6 +3026,7 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton10;
     private javax.swing.JButton jButton11;
+    private javax.swing.JButton jButton12;
     private javax.swing.JButton jButton13;
     private javax.swing.JButton jButton14;
     private javax.swing.JButton jButton15;
@@ -2968,6 +3054,7 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JButton jButton39;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
@@ -2986,6 +3073,7 @@ private void refreshAppointmentsToPay() {
     private javax.swing.JLabel jLabel26;
     private javax.swing.JLabel jLabel27;
     private javax.swing.JLabel jLabel29;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel31;
     private javax.swing.JLabel jLabel32;
     private javax.swing.JLabel jLabel33;
